@@ -967,7 +967,7 @@ function HomeTab({whoopData,whoopConnected,onConnectWhoop,currentWeek}){
       {whoopConnected&&whoopData?(
         <div className="whoop-card">
           <div className="whoop-score-lbl">Today's Recovery</div>
-          <div className="whoop-score" style={{color:scoreColor}}>{score||'—'}</div>
+          <div className="whoop-score" style={{color:scoreColor}}>{score!=null?Math.round(score):'—'}</div>
           <div className="whoop-metrics">
             <div className="whoop-metric">
               <div className="whoop-metric-val">{whoopData?.strain?.score?.toFixed(1)||'—'}</div>
@@ -1628,20 +1628,25 @@ async function proxyGet(path, token){
 
 async function fetchWhoopData(token){
   try{
-    dbgLog('[Whoop] Fetching data via proxy...');
+    dbgLog('[Whoop] Fetching data via proxy (v2 paths)...');
     const[rec,slp,cyc]=await Promise.all([
-      proxyGet('/developer/v1/recovery?limit=1',token),
-      proxyGet('/developer/v1/sleep?limit=1',token),
-      proxyGet('/developer/v1/cycle?limit=1',token),
+      proxyGet('/developer/v2/recovery?limit=1',token),
+      proxyGet('/developer/v2/sleep?limit=1',token),
+      proxyGet('/developer/v2/cycle?limit=1',token),
     ]);
     dbgLog('[Whoop] Recovery raw:',rec);
     dbgLog('[Whoop] Sleep raw:',slp);
     dbgLog('[Whoop] Cycle raw:',cyc);
+    // Recovery score — from most recent scored recovery record
+    const recRecord=rec?.records?.find(r=>r.score_state==='SCORED');
+    const slpRecord=slp?.records?.find(s=>s.score_state==='SCORED');
+    const cycRecord=cyc?.records?.[0];
     const result={
-      recovery:rec?.records?.[0]?.score?.recovery_score??rec?.records?.[0]?.score,
-      sleep:slp?.records?.[0]?.score?.sleep_performance_percentage??slp?.records?.[0]?.score,
-      strain:cyc?.records?.[0]?.score?.strain??cyc?.records?.[0]?.score,
-      hrv:rec?.records?.[0]?.score?.hrv_rmssd_milli?.toFixed(0)
+      recovery:recRecord?.score?.recovery_score,
+      sleep:slpRecord?.score?.sleep_performance_percentage,
+      strain:cycRecord?.score?.strain,
+      hrv:recRecord?.score?.hrv_rmssd_milli?.toFixed(0),
+      rhr:recRecord?.score?.resting_heart_rate
     };
     dbgLog('[Whoop] Parsed result:',result);
     return result;
@@ -1791,11 +1796,11 @@ function App(){
           setTimeout(()=>{window._dbgTaps=0;},1000);
         }}>Court<span>Ready</span></div>
         <div className="hdr-right">
-          {whoopData?.recovery!==undefined&&(
+          {whoopData?.recovery!=null&&(
             <div className="whoop-chip">
               <div className={`whoop-dot${whoopData.recovery>=67?' green':whoopData.recovery>=34?' amber':' red'}`}/>
               <span style={{color:whoopData.recovery>=67?'var(--court-line)':whoopData.recovery>=34?'var(--accent)':'var(--red)'}}>
-                {whoopData.recovery}%
+                {Math.round(whoopData.recovery)}%
               </span>
             </div>
           )}
