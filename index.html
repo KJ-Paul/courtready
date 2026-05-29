@@ -970,16 +970,16 @@ function HomeTab({whoopData,whoopConnected,onConnectWhoop,currentWeek}){
           <div className="whoop-score" style={{color:scoreColor}}>{score!=null?Math.round(score):'—'}</div>
           <div className="whoop-metrics">
             <div className="whoop-metric">
-              <div className="whoop-metric-val">{whoopData?.strain?.score?.toFixed(1)||'—'}</div>
+              <div className="whoop-metric-val">{whoopData?.strain!=null?Number(whoopData.strain).toFixed(1):'—'}</div>
               <div className="whoop-metric-lbl">Strain</div>
             </div>
             <div className="whoop-metric">
-              <div className="whoop-metric-val">{whoopData?.sleep?.score||'—'}</div>
-              <div className="whoop-metric-lbl">Sleep score</div>
+              <div className="whoop-metric-val">{whoopData?.sleep!=null?Math.round(whoopData.sleep)+'%':'—'}</div>
+              <div className="whoop-metric-lbl">Sleep</div>
             </div>
             <div className="whoop-metric">
-              <div className="whoop-metric-val">{whoopData?.hrv||'—'}</div>
-              <div className="whoop-metric-lbl">HRV</div>
+              <div className="whoop-metric-val">{whoopData?.hrv||whoopData?.rhr||'—'}</div>
+              <div className="whoop-metric-lbl">{whoopData?.hrv?'HRV ms':'RHR bpm'}</div>
             </div>
           </div>
           {score&&(
