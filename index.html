@@ -555,6 +555,64 @@ function VideoCard({vid,title='Exercise demo'}){
 }
 
 
+
+// ── DEBUG PANEL ──────────────────────────────────────────────────────────
+const dbgLogs = [];
+const dbgListeners = [];
+function dbgLog(...args) {
+  const line = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  console.log(...args);
+  dbgLogs.push({ t: new Date().toLocaleTimeString(), msg: line });
+  dbgListeners.forEach(fn => fn());
+}
+
+function DebugPanel({ onClose }) {
+  const [logs, setLogs] = useState([...dbgLogs]);
+  useEffect(() => {
+    const fn = () => setLogs([...dbgLogs]);
+    dbgListeners.push(fn);
+    return () => { const i = dbgListeners.indexOf(fn); if (i > -1) dbgListeners.splice(i, 1); };
+  }, []);
+
+  const storage = {
+    pending_code: localStorage.getItem('whoop_pending_code') || '—',
+    verifier: localStorage.getItem('whoop_verifier') ? 'present' : '—',
+    token: localStorage.getItem('cr_whoop_token') ? 'present' : '—',
+    url: window.location.href,
+  };
+
+  return (
+    <div style={{position:'fixed',inset:0,background:'#000',zIndex:500,display:'flex',flexDirection:'column',fontFamily:'monospace',fontSize:11}}>
+      <div style={{padding:'10px 14px',borderBottom:'1px solid #333',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span style={{color:'#74C69D',fontWeight:700}}>DEBUG PANEL</span>
+        <button onClick={onClose} style={{background:'transparent',color:'#aaa',fontSize:16}}>✕</button>
+      </div>
+      <div style={{padding:'10px 14px',borderBottom:'1px solid #333',lineHeight:1.8}}>
+        <div style={{color:'#888',marginBottom:4}}>STORAGE</div>
+        {Object.entries(storage).map(([k,v])=>(
+          <div key={k}><span style={{color:'#F4A261'}}>{k}:</span> <span style={{color:'#E6EDF3',wordBreak:'break-all'}}>{v}</span></div>
+        ))}
+      </div>
+      <div style={{flex:1,overflow:'auto',padding:'10px 14px'}}>
+        <div style={{color:'#888',marginBottom:6}}>LOGS ({logs.length})</div>
+        {logs.length===0&&<div style={{color:'#555'}}>No logs yet. Try connecting Whoop.</div>}
+        {logs.map((l,i)=>(
+          <div key={i} style={{marginBottom:4}}>
+            <span style={{color:'#555'}}>{l.t} </span>
+            <span style={{color:'#E6EDF3',wordBreak:'break-all'}}>{l.msg}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{padding:'10px 14px',borderTop:'1px solid #333',display:'flex',gap:8}}>
+        <button onClick={()=>{dbgLogs.length=0;setLogs([]);}} style={{background:'#333',color:'#aaa',padding:'6px 12px',borderRadius:6,border:'none',flex:1}}>Clear</button>
+        <button onClick={()=>{
+          navigator.clipboard?.writeText(logs.map(l=>l.t+' '+l.msg).join('\n')).catch(()=>{});
+        }} style={{background:'#333',color:'#aaa',padding:'6px 12px',borderRadius:6,border:'none',flex:1}}>Copy</button>
+      </div>
+    </div>
+  );
+}
+
 // ── WORKOUT LOGGER (Hevy-style) ──────────────────────────────────────────
 function WorkoutLogger({block, onClose}){
   const exercises=(block==='B'?GYM_B:GYM_C).flatMap(s=>s.exs);
@@ -1611,13 +1669,20 @@ function App(){
   const[whoopData,setWhoopData]=useState(null);
   const[authLoading,setAuthLoading]=useState(false);
   const[whoopError,setWhoopError]=useState('');
+  const[showDebug,setShowDebug]=useState(false);
   const currentWeek=currentWeekNum();
 
   // Handle Whoop OAuth callback — stash code before lock screen, process after unlock
   useEffect(()=>{
     const params=new URLSearchParams(window.location.search);
     const code=params.get('code');
+    const fullUrl=window.location.href;
+    dbgLog('[Whoop] App loaded. URL:',fullUrl);
+    dbgLog('[Whoop] Code from URL:',code);
+    dbgLog('[Whoop] Pending code in storage:',localStorage.getItem('whoop_pending_code'));
+    dbgLog('[Whoop] Verifier in storage:',localStorage.getItem('whoop_verifier'));
     if(code){
+      dbgLog('[Whoop] Stashing code to localStorage');
       localStorage.setItem('whoop_pending_code',code);
       window.history.replaceState({},'',window.location.pathname);
     }
@@ -1627,18 +1692,27 @@ function App(){
   useEffect(()=>{
     if(locked||setupLock)return;
     const code=localStorage.getItem('whoop_pending_code');
+    dbgLog('[Whoop] Unlock effect fired. locked=',locked,'code=',code);
     if(!code)return;
     localStorage.removeItem('whoop_pending_code');
     setAuthLoading(true);
     setWhoopError('');
+    dbgLog('[Whoop] Exchanging code via proxy...');
     exchangeWhoopCode(code).then(data=>{
+      dbgLog('[Whoop] Exchange response:',JSON.stringify(data));
       if(data.access_token){
         lss('cr_whoop_token',data.access_token);
         if(data.refresh_token)lss('cr_whoop_refresh',data.refresh_token);
         setWhoopToken(data.access_token);
-      }else{setWhoopError('No access token received.');}
-    }).catch(e=>{setWhoopError(e.message||'Connection failed');console.error('Whoop:',e);})
-      .finally(()=>setAuthLoading(false));
+        dbgLog('[Whoop] Token stored successfully');
+      }else{
+        dbgLog('[Whoop] No access_token in response');
+        setWhoopError('No access token received. Response: '+JSON.stringify(data));
+      }
+    }).catch(e=>{
+      dbgLog('[Whoop] ERROR: Error:',e);
+      setWhoopError(e.message||'Connection failed');
+    }).finally(()=>setAuthLoading(false));
   },[locked,setupLock]);
 
   // Fetch Whoop data when token available
@@ -1685,11 +1759,17 @@ function App(){
 
   return(
     <div className="app">
+      {showDebug&&<DebugPanel onClose={()=>setShowDebug(false)}/>}
       {authLoading&&<div style={{position:'fixed',top:0,left:0,right:0,background:'var(--court)',color:'#fff',textAlign:'center',padding:'8px',fontSize:13,fontWeight:600,zIndex:999}}>Connecting Whoop…</div>}
       {whoopError&&<div style={{position:'fixed',top:0,left:0,right:0,background:'var(--red)',color:'#fff',textAlign:'center',padding:'8px 12px',fontSize:12,zIndex:999,display:'flex',justifyContent:'space-between',alignItems:'center'}}><span>Whoop error: {whoopError}</span><button style={{background:'transparent',color:'#fff',fontWeight:700}} onClick={()=>setWhoopError('')}>✕</button></div>}
       <div className="app">
       <div className="hdr">
-        <div className="hdr-title">Court<span>Ready</span></div>
+        <div className="hdr-title" onClick={()=>{
+          if(!window._dbgTaps)window._dbgTaps=0;
+          window._dbgTaps++;
+          if(window._dbgTaps>=3){window._dbgTaps=0;setShowDebug(true);}
+          setTimeout(()=>{window._dbgTaps=0;},1000);
+        }}>Court<span>Ready</span></div>
         <div className="hdr-right">
           {whoopData?.recovery!==undefined&&(
             <div className="whoop-chip">
