@@ -966,8 +966,11 @@ function HomeTab({whoopData,whoopConnected,onConnectWhoop,currentWeek}){
       
       {whoopConnected&&whoopData?(
         <div className="whoop-card">
-          <div className="whoop-score-lbl" spellCheck="false">Today's Recovery</div>
-          <div className="whoop-score" style={{color:scoreColor}}>{score!=null?Math.round(score):'—'}</div>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
+            <div className="whoop-score-lbl" spellCheck="false">TODAY'S RECOVERY</div>
+            {score!=null&&<div style={{background:scoreColor,color:'#fff',fontSize:10,fontWeight:700,padding:'2px 7px',borderRadius:4,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:'.05em',textTransform:'uppercase'}}>{score>=67?'GREEN':score>=34?'AMBER':'RED'}</div>}
+          </div>
+          <div className="whoop-score" style={{color:'#fff',textShadow:'0 2px 8px rgba(0,0,0,.3)'}}>{score!=null?Math.round(score)+'%':'—'}</div>
           <div className="whoop-metrics">
             <div className="whoop-metric">
               <div className="whoop-metric-val">{whoopData?.strain!=null?Number(whoopData.strain).toFixed(1):'—'}</div>
