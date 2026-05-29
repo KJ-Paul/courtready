@@ -269,7 +269,7 @@ const {useState,useEffect,useRef,useCallback}=React;
 // ═══════════════════════════════════════════════════════
 const WHOOP={
   clientId:'ce65ef88-78f3-4e53-b5f6-ad6fe3c170a3',
-  redirectUri:'https://kj-paul.github.io/courtready',
+  redirectUri:'https://kj-paul.github.io/courtready/',
   authUrl:'https://api.prod.whoop.com/oauth/oauth2/auth',
   tokenUrl:'https://api.prod.whoop.com/oauth/oauth2/token',
   apiBase:'https://api.prod.whoop.com/developer/v1',
@@ -291,27 +291,27 @@ const BLOCKS_TENNIS=[
 ];
 
 const DRILLS=[
-  {id:'wide',name:'Wide ball recovery',tag:'footwork',dur:'10 min',vid:null,
+  {id:'wide',name:'Wide ball recovery',tag:'footwork',dur:'10 min',vid:'CofM-vwQRW4',
    steps:['Machine alternates wide FH / wide BH, medium pace, 6-sec interval.',
           'Start at centre mark. Crossover step to each ball, hit, side-shuffle back to centre.',
           '10 balls per set · rest 60 sec · 4 sets. Focus on recovery speed, not power.'],
    tip:'Best drill for feeling light on your feet. The recovery step back to centre is what most intermediates skip.'},
-  {id:'depth',name:'Depth control',tag:'shot quality',dur:'10 min',vid:null,
+  {id:'depth',name:'Depth control',tag:'shot quality',dur:'10 min',vid:'YUBU1_Xf4Gc',
    steps:['Machine feeds mid-court, medium pace, 5-sec interval. Cone 1m inside each baseline corner as target.',
           'Hit 15 FH to one corner target, then 15 BH to the other.',
           'Count how many land within 2m of cone. Track weekly — direct tournament metric.'],
    tip:''},
-  {id:'approach',name:'Approach & finish',tag:'net game',dur:'10 min',vid:null,
+  {id:'approach',name:'Approach & finish',tag:'net game',dur:'10 min',vid:'sSTgDueKK3o',
    steps:['Machine feeds short (service box), medium-low pace.',
           'Start at baseline. Move in on feed, hit approach crosscourt, advance to net.',
           'Machine fires second ball — finish with volley. 10 reps · rest 90 sec · 3 sets.'],
    tip:'Most intermediates avoid the net. Building comfort here gives you a real edge in tournaments.'},
-  {id:'topspin',name:'High topspin handler',tag:'defence',dur:'8 min',vid:null,
+  {id:'topspin',name:'High topspin handler',tag:'defence',dur:'8 min',vid:'-Fs-AZxo1rk',
    steps:['Machine set to heavy topspin, high bounce, medium-slow pace to BH.',
           'Take ball early at top of bounce, or let it drop — don\'t get caught between. 20 BH then 20 FH.',
           'Increase pace one level per week once positioning is comfortable.'],
    tip:''},
-  {id:'serve1',name:'Serve + 1 live ball',tag:'pattern play',dur:'10 min',vid:null,
+  {id:'serve1',name:'Serve + 1 live ball',tag:'pattern play',dur:'10 min',vid:'1CRyWZDH2Ew',
    steps:['Machine near opposite service box simulating a return. Medium pace to FH or BH.',
           'Serve, then immediately recover to ready position at baseline.',
           'Machine fires — play with intention: attack crosscourt or redirect down the line. 15 reps each side.'],
@@ -325,28 +325,28 @@ const GYM_B=[
     {name:'Lateral band walk',sets:'2 × 15 each',vid:null},
   ]},
   {section:'Main strength',exs:[
-    {name:'Smith machine squat',sets:'4 × 6–8 heavy',tag:'compound',vid:null},
-    {name:'Romanian deadlift (barbell)',sets:'3 × 10',vid:null},
-    {name:'Dumbbell reverse lunge',sets:'3 × 10 each',vid:null},
+    {name:'Smith machine squat',sets:'4 × 6–8 heavy',tag:'compound',vid:'yoP29LtTdnQ'},
+    {name:'Romanian deadlift (barbell)',sets:'3 × 10',vid:'Q5vwsJFwhyg'},
+    {name:'Dumbbell reverse lunge',sets:'3 × 10 each',vid:'D7KaRcUTQeE'},
     {name:'Cable lateral step & pull',sets:'3 × 12 each',vid:null},
-    {name:'Single-leg calf raise',sets:'3 × 15 · slow eccentric',vid:null},
+    {name:'Single-leg calf raise',sets:'3 × 15 · slow eccentric',vid:'JbyjNymZOt0'},
   ]},
   {section:'Core finisher · 10 min',exs:[
-    {name:'Dead bug',sets:'3 × 8 each',vid:null},
-    {name:'Pallof press (cable)',sets:'3 × 12 each side',vid:null},
-    {name:'Cable woodchop',sets:'3 × 12 each',vid:null},
+    {name:'Dead bug',sets:'3 × 8 each',vid:'4XLEnwUr1d8'},
+    {name:'Pallof press (cable)',sets:'3 × 12 each side',vid:'SY5lRzBPtM4'},
+    {name:'Cable woodchop',sets:'3 × 12 each',vid:'Gwcf4TOj1hc'},
   ]},
 ];
 
 const GYM_C=[
   {section:'Main strength + shoulder health',exs:[
-    {name:'Smith machine incline press',sets:'4 × 8',vid:null},
-    {name:'Cable row (seated)',sets:'4 × 10',vid:null},
-    {name:'Dumbbell shoulder press',sets:'3 × 10',vid:null},
-    {name:'Cable face pull',sets:'3 × 15',tag:'injury prevention',vid:null},
-    {name:'Single-arm dumbbell row',sets:'3 × 10 each',vid:null},
-    {name:'External rotation (cable)',sets:'3 × 15 each',tag:'injury prevention',vid:null},
-    {name:'Wrist curl + reverse curl',sets:'2 × 15 each',tag:'elbow protection',vid:null},
+    {name:'Smith machine incline press',sets:'4 × 8',vid:'e2DLc7i0uyU'},
+    {name:'Cable row (seated)',sets:'4 × 10',vid:'GZbfZ033f74'},
+    {name:'Dumbbell shoulder press',sets:'3 × 10',vid:'qEwKCR5JCog'},
+    {name:'Cable face pull',sets:'3 × 15',tag:'injury prevention',vid:'V8dZ3pyiCBo'},
+    {name:'Single-arm dumbbell row',sets:'3 × 10 each',vid:'pYcpY20QaE8'},
+    {name:'External rotation (cable)',sets:'3 × 15 each',tag:'injury prevention',vid:'ml6cT4AZdqI'},
+    {name:'Wrist curl + reverse curl',sets:'2 × 15 each',tag:'elbow protection',vid:'BDMwUMHi4Ow'},
   ]},
 ];
 
@@ -524,8 +524,40 @@ function VideoCard({vid,title='Exercise demo'}){
   );
 }
 
+// Quick log modal — triggered from Train tab
+function QuickLogModal({preset,onClose}){
+  const[dur,setDur]=useState(preset.defaultDur||'30');
+  const[notes,setNotes]=useState('');
+  const[rating,setRating]=useState(0);
+  const EMOJI=['','😫','😕','😐','🙂','💪'];
+  function save(){
+    const sessions=ls('cr_sessions',[]);
+    const ns={id:Date.now(),date:todayStr(),week:currentWeekNum(),block:preset.block,
+      exercise:preset.name,dur,notes,rating,source:'train'};
+    lss('cr_sessions',[ns,...sessions]);
+    onClose(true);
+  }
+  return(
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.75)',zIndex:300,display:'flex',alignItems:'flex-end'}} onClick={onClose}>
+      <div style={{background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:'var(--rl) var(--rl) 0 0',padding:'20px 16px',width:'100%',maxHeight:'80vh',overflowY:'auto'}} onClick={e=>e.stopPropagation()}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+          <div style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:18,fontWeight:900,textTransform:'uppercase',letterSpacing:'.05em',color:'var(--text)'}}>Log: {preset.name}</div>
+          <button onClick={onClose} style={{background:'transparent',color:'var(--text3)',fontSize:20,padding:'2px 6px',borderRadius:6}}>✕</button>
+        </div>
+        <div className="lf-row"><div className="lf-lbl">Duration (min)</div>
+          <input type="number" className="lf-input" value={dur} onChange={e=>setDur(e.target.value)} min="5" max="180"/></div>
+        <div className="lf-row"><div className="lf-lbl">Notes</div>
+          <textarea className="lf-textarea" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Depth control score? How did intervals feel?"/></div>
+        <div className="lf-row"><div className="lf-lbl">How did it feel?</div>
+          <div className="rating-row">{[1,2,3,4,5].map(r=><button key={r} className={`rating-btn${rating===r?' sel':''}`} onClick={()=>setRating(r)}>{EMOJI[r]}</button>)}</div></div>
+        <button className="btn btn-primary btn-full" style={{marginTop:8}} onClick={save}>Save session ✓</button>
+      </div>
+    </div>
+  );
+}
+
 // Expandable drill card
-function DrillCard({drill}){
+function DrillCard({drill,onLog}){
   const[open,setOpen]=useState(false);
   const tagClass={footwork:'tg','shot quality':'tp','net game':'ta',defence:'tr','pattern play':'tg'}[drill.tag]||'tg';
   return(
@@ -543,6 +575,10 @@ function DrillCard({drill}){
           <div className="step" key={i}><div className="stepn">{i+1}</div><div className="stept">{s}</div></div>
         ))}
         {drill.tip&&<div className="drill-tip">{drill.tip}</div>}
+        <button className="btn btn-outline btn-sm" style={{marginTop:10,width:'100%'}}
+          onClick={()=>onLog({name:drill.name,block:'D',defaultDur:'35'})}>
+          + Log this drill
+        </button>
       </div>
     </div>
   );
@@ -863,9 +899,17 @@ function ScheduleTab(){
 function TrainTab(){
   const[sub,setSub]=useState('drills');
   const[gymSub,setGymSub]=useState('B');
+  const[logPreset,setLogPreset]=useState(null);
+  const[logSaved,setLogSaved]=useState(false);
+
+  function handleLog(preset){setLogPreset(preset);setLogSaved(false);}
+  function closeLog(saved){setLogPreset(null);if(saved){setLogSaved(true);setTimeout(()=>setLogSaved(false),2500);}}
 
   return(
     <div className="pg">
+      {logPreset&&<QuickLogModal preset={logPreset} onClose={closeLog}/>}
+      {logSaved&&<div style={{position:'fixed',bottom:80,left:'50%',transform:'translateX(-50%)',background:'var(--court)',color:'#fff',padding:'8px 20px',borderRadius:20,fontSize:13,fontWeight:600,zIndex:200,whiteSpace:'nowrap'}}>Session logged ✓</div>}
+
       <div className="subnav">
         {['drills','gym','intervals'].map(s=>(
           <button key={s} className={`snbtn${sub===s?' on':''}`} onClick={()=>setSub(s)}>
@@ -877,7 +921,7 @@ function TrainTab(){
       {sub==='drills'&&(
         <>
           <div className="info orange">Max 35 min live hitting per session · machine before gym on combo days</div>
-          {DRILLS.map(d=><DrillCard key={d.id} drill={d}/>)}
+          {DRILLS.map(d=><DrillCard key={d.id} drill={d} onLog={handleLog}/>)}
         </>
       )}
 
@@ -892,12 +936,19 @@ function TrainTab(){
               <div className="card-title">{section.section}</div>
               <div style={{marginTop:8}}>
                 {section.exs.map((ex,ei)=>(
-                  <div className="row" key={ei}>
-                    <span className="rn">{ex.name}{ex.tag&&<span className={`tag tg`}>{ex.tag}</span>}</span>
-                    <span className="rv">{ex.sets}</span>
+                  <div key={ei}>
+                    <div className="row">
+                      <span className="rn">{ex.name}{ex.tag&&<span className="tag tg">{ex.tag}</span>}</span>
+                      <span className="rv">{ex.sets}</span>
+                    </div>
+                    {ex.vid&&<VideoCard vid={ex.vid} title={ex.name}/>}
                   </div>
                 ))}
               </div>
+              <button className="btn btn-outline btn-sm" style={{marginTop:10,width:'100%'}}
+                onClick={()=>handleLog({name:section.section,block:gymSub,defaultDur:'50'})}>
+                + Log {gymSub==='B'?'Block B':'Block C'} session
+              </button>
             </div>
           ))}
           {gymSub==='C'&&<div className="info orange">Always do Block C after Block D on combo days.</div>}
@@ -912,6 +963,10 @@ function TrainTab(){
             {INTERVAL_PROG.map((p,i)=>(
               <div className="row" key={i}><span className="rn">{p.weeks}</span><span className="rv">{p.sets} · {p.rest}</span></div>
             ))}
+            <button className="btn btn-outline btn-sm" style={{marginTop:10,width:'100%'}}
+              onClick={()=>handleLog({name:'Ball machine intervals',block:'E',defaultDur:'20'})}>
+              + Log interval session
+            </button>
           </div>
           <div className="info green">More effective than baseline sprints — you're tracking the ball and making decisions, so HR climbs faster and the fatigue mirrors a real match.</div>
         </>
@@ -1117,10 +1172,11 @@ function LogTab(){
   const[sub,setSub]=useState('log');
   const[sessions,setSessions]=useState(()=>ls('cr_sessions',[]));
   const[form,setForm]=useState({date:todayStr(),block:'A',dur:'60',notes:'',rating:0});
+  const[filterBlock,setFilterBlock]=useState('all');
 
   function saveSession(){
     if(!form.block)return;
-    const ns={...form,id:Date.now(),week:currentWeekNum()};
+    const ns={...form,id:Date.now(),week:currentWeekNum(),source:'manual'};
     const updated=[ns,...sessions];
     setSessions(updated);lss('cr_sessions',updated);
     setForm({date:todayStr(),block:'A',dur:'60',notes:'',rating:0});
@@ -1130,11 +1186,19 @@ function LogTab(){
     const updated=sessions.filter(s=>s.id!==id);
     setSessions(updated);lss('cr_sessions',updated);
   }
-
-  const RATING_EMOJI=['','😫','😕','😐','🙂','💪'];
+  const EMOJI=['','😫','😕','😐','🙂','💪'];
+  const filtered=filterBlock==='all'?sessions:sessions.filter(s=>s.block===filterBlock);
+  const thisWeek=sessions.filter(s=>s.week===currentWeekNum()).length;
+  const streak=calcStreak(sessions);
 
   return(
     <div className="pg">
+      <div className="stats-row" style={{marginBottom:14}}>
+        <div className="stat-card"><div className="stat-val">{sessions.length}</div><div className="stat-lbl">Total logged</div></div>
+        <div className="stat-card"><div className="stat-val">{thisWeek}</div><div className="stat-lbl">This week</div></div>
+        <div className="stat-card"><div className="stat-val">{streak}</div><div className="stat-lbl">Week streak</div></div>
+      </div>
+
       <div className="subnav">
         <button className={`snbtn${sub==='log'?' on':''}`} onClick={()=>setSub('log')}>Log session</button>
         <button className={`snbtn${sub==='history'?' on':''}`} onClick={()=>setSub('history')}>History</button>
@@ -1142,57 +1206,55 @@ function LogTab(){
 
       {sub==='log'&&(
         <div className="log-form">
-          <div className="lf-row">
-            <div className="lf-lbl">Date</div>
-            <input type="date" className="lf-input" value={form.date} onChange={e=>setForm({...form,date:e.target.value})}/>
-          </div>
-          <div className="lf-row">
-            <div className="lf-lbl">Block</div>
+          <div className="lf-row"><div className="lf-lbl">Date</div>
+            <input type="date" className="lf-input" value={form.date} onChange={e=>setForm({...form,date:e.target.value})}/></div>
+          <div className="lf-row"><div className="lf-lbl">Block</div>
             <select className="lf-select" value={form.block} onChange={e=>setForm({...form,block:e.target.value})}>
               {BLOCKS_TENNIS.map(b=><option key={b.id} value={b.id}>{b.id} — {b.name}</option>)}
-            </select>
-          </div>
-          <div className="lf-row">
-            <div className="lf-lbl">Duration (min)</div>
-            <input type="number" className="lf-input" value={form.dur} onChange={e=>setForm({...form,dur:e.target.value})} min="5" max="180"/>
-          </div>
-          <div className="lf-row">
-            <div className="lf-lbl">Notes</div>
-            <textarea className="lf-textarea" value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} placeholder="How did it go? Anything to flag?"/>
-          </div>
-          <div className="lf-row">
-            <div className="lf-lbl">How did it feel?</div>
-            <div className="rating-row">
-              {[1,2,3,4,5].map(r=>(
-                <button key={r} className={`rating-btn${form.rating===r?' sel':''}`} onClick={()=>setForm({...form,rating:r})}>{RATING_EMOJI[r]}</button>
-              ))}
-            </div>
-          </div>
+            </select></div>
+          <div className="lf-row"><div className="lf-lbl">Duration (min)</div>
+            <input type="number" className="lf-input" value={form.dur} onChange={e=>setForm({...form,dur:e.target.value})} min="5" max="180"/></div>
+          <div className="lf-row"><div className="lf-lbl">Notes</div>
+            <textarea className="lf-textarea" value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} placeholder="How did it go? Anything to flag?"/></div>
+          <div className="lf-row"><div className="lf-lbl">How did it feel?</div>
+            <div className="rating-row">{[1,2,3,4,5].map(r=><button key={r} className={`rating-btn${form.rating===r?' sel':''}`} onClick={()=>setForm({...form,rating:r})}>{EMOJI[r]}</button>)}</div></div>
           <button className="btn btn-primary btn-full" style={{marginTop:6}} onClick={saveSession}>Save session</button>
+          <div className="info green" style={{marginTop:10}}>Tip: You can also log directly from a drill or workout in the Train tab — it pre-fills the block for you.</div>
         </div>
       )}
 
       {sub==='history'&&(
         <>
-          {sessions.length===0?(
-            <div style={{textAlign:'center',padding:'40px 0',color:'var(--text3)',fontSize:13}}>No sessions logged yet.<br/>Start tracking your training!</div>
-          ):sessions.map(s=>(
-            <div className="session-item" key={s.id}>
-              <div className="si-head">
-                <div className="si-block">{BLOCKS_TENNIS.find(b=>b.id===s.block)?.name||s.block}</div>
-                <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                  <div className="si-date">{s.date}</div>
-                  <button onClick={()=>deleteSession(s.id)} style={{background:'transparent',color:'var(--text3)',fontSize:14,padding:'2px 4px',borderRadius:4}}>✕</button>
+          <div style={{display:'flex',gap:'6px',flexWrap:'wrap',marginBottom:10}}>
+            {['all',...BLOCKS_TENNIS.map(b=>b.id)].map(f=>(
+              <button key={f} className={`wk-btn${filterBlock===f?' on':''}`} style={{fontSize:11}} onClick={()=>setFilterBlock(f)}>{f==='all'?'All':f}</button>
+            ))}
+          </div>
+          {filtered.length===0?(
+            <div style={{textAlign:'center',padding:'40px 0',color:'var(--text3)',fontSize:13}}>No sessions yet{filterBlock!=='all'?` for Block ${filterBlock}`:''}.{'\n'}Log your first session above or from the Train tab.</div>
+          ):filtered.map(s=>{
+            const blockName=s.exercise||BLOCKS_TENNIS.find(b=>b.id===s.block)?.name||s.block;
+            const blockColor=BLOCKS_TENNIS.find(b=>b.id===s.block)?.color||'var(--text2)';
+            return(
+              <div className="session-item" key={s.id}>
+                <div className="si-head">
+                  <div className="si-block" style={{color:blockColor}}>{blockName}</div>
+                  <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                    <div className="si-date">{s.date}</div>
+                    <button onClick={()=>deleteSession(s.id)} style={{background:'transparent',color:'var(--text3)',fontSize:14,padding:'2px 4px',borderRadius:4}}>✕</button>
+                  </div>
+                </div>
+                {s.notes&&<div className="si-notes">{s.notes}</div>}
+                <div className="si-meta">
+                  {s.block&&<div className="si-chip">Block {s.block}</div>}
+                  {s.dur&&<div className="si-chip">{s.dur} min</div>}
+                  {s.week&&<div className="si-chip">Wk {s.week}</div>}
+                  {s.rating>0&&<div className="si-chip">{EMOJI[s.rating]}</div>}
+                  {s.source==='train'&&<div className="si-chip" style={{color:'var(--court-line)'}}>via Train</div>}
                 </div>
               </div>
-              {s.notes&&<div className="si-notes">{s.notes}</div>}
-              <div className="si-meta">
-                {s.dur&&<div className="si-chip">{s.dur} min</div>}
-                {s.week&&<div className="si-chip">Week {s.week}</div>}
-                {s.rating>0&&<div className="si-chip">{['','😫','😕','😐','🙂','💪'][s.rating]}</div>}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </>
       )}
     </div>
@@ -1200,10 +1262,11 @@ function LogTab(){
 }
 
 // ── SETTINGS TAB ─────────────────────────────────────────
-function SettingsTab({whoopConnected,onDisconnectWhoop,onConnectWhoop}){
+function SettingsTab({whoopConnected,onDisconnectWhoop,onConnectWhoop,onSetupLock}){
   const[notif,setNotif]=useState(()=>ls('cr_notif',{morning:true,winddown:true,sunday:true}));
   const[sport,setSport]=useState(()=>ls('cr_sport','tennis'));
   const[lockEnabled,setLockEnabled]=useState(()=>ls('cr_has_pin',false)||ls('cr_has_bio',false));
+  useEffect(()=>{setLockEnabled(ls('cr_has_pin',false)||ls('cr_has_bio',false));},[]);
 
   function toggleNotif(key){
     const n={...notif,[key]:!notif[key]};
@@ -1253,7 +1316,7 @@ function SettingsTab({whoopConnected,onDisconnectWhoop,onConnectWhoop}){
           <div><div className="settings-label">Biometric / PIN lock</div><div className="settings-sub">{lockEnabled?'Enabled':'Disabled'}</div></div>
           <button className="btn btn-sm btn-outline" onClick={()=>{
             if(lockEnabled){if(confirm('Remove lock?')){localStorage.removeItem('cr_has_pin');localStorage.removeItem('cr_has_bio');localStorage.removeItem('cr_pin_hash');localStorage.removeItem('cr_bio_id');setLockEnabled(false);}}
-            else{window.location.reload();}
+            else{onSetupLock();}
           }}>{lockEnabled?'Remove lock':'Set up lock'}</button>
         </div>
       </div>
@@ -1346,6 +1409,7 @@ function scheduleNotifications(prefs){
 // ═══════════════════════════════════════════════════════
 function App(){
   const[locked,setLocked]=useState(()=>ls('cr_has_pin',false)||ls('cr_has_bio',false));
+  const[setupLock,setSetupLock]=useState(false);
   const[tab,setTab]=useState('home');
   const[showSettings,setShowSettings]=useState(false);
   const[whoopToken,setWhoopToken]=useState(()=>ls('cr_whoop_token',null));
@@ -1400,6 +1464,7 @@ function App(){
   }
 
   if(locked)return<LockScreen onUnlock={()=>setLocked(false)}/>;
+  if(setupLock)return<LockScreen onUnlock={()=>{setSetupLock(false);setShowSettings(true);}}/>;
   if(authLoading)return<div style={{display:'flex',height:'100vh',alignItems:'center',justifyContent:'center',background:'var(--bg)',flexDirection:'column',gap:12}}><div style={{fontSize:24,color:'var(--court-line)'}}>Connecting Whoop…</div><div style={{fontSize:12,color:'var(--text3)'}}>One moment</div></div>;
 
   const TABS=[
@@ -1431,7 +1496,7 @@ function App(){
 
       <div className="tab-content">
         {showSettings?(
-          <SettingsTab whoopConnected={!!whoopToken} onDisconnectWhoop={disconnectWhoop} onConnectWhoop={initiateWhoopAuth}/>
+          <SettingsTab whoopConnected={!!whoopToken} onDisconnectWhoop={disconnectWhoop} onConnectWhoop={initiateWhoopAuth} onSetupLock={()=>setSetupLock(true)}/>
         ):tab==='home'?(
           <HomeTab whoopData={whoopData} whoopConnected={!!whoopToken} onConnectWhoop={initiateWhoopAuth} currentWeek={currentWeek}/>
         ):tab==='schedule'?(
