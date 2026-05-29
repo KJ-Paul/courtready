@@ -299,7 +299,9 @@ const WHOOP={
   clientId:'ce65ef88-78f3-4e53-b5f6-ad6fe3c170a3',
   redirectUri:'https://kj-paul.github.io/courtready/',
   authUrl:'https://api.prod.whoop.com/oauth/oauth2/auth',
-  tokenUrl:'https://api.prod.whoop.com/oauth/oauth2/token',
+  // Token exchange goes through Netlify proxy to avoid CORS
+  // Replace YOUR-NETLIFY-SITE with your actual Netlify site name after setup
+  tokenProxy:'https://courtready-kj.netlify.app/.netlify/functions/whoop-token',
   apiBase:'https://api.prod.whoop.com/developer/v1',
   scopes:'read:recovery read:sleep read:workout read:cycles'
 };
@@ -1545,7 +1547,10 @@ async function exchangeWhoopCode(code){
   if(!verifier)throw new Error('PKCE verifier missing — please try connecting again.');
   localStorage.removeItem('whoop_verifier');
   localStorage.removeItem('whoop_state');
-  const res=await fetch(WHOOP.tokenUrl,{
+  if(!WHOOP.tokenProxy||WHOOP.tokenProxy.includes('YOUR-NETLIFY-SITE')){
+    throw new Error('Netlify proxy not configured yet — see setup instructions.');
+  }
+  const res=await fetch(WHOOP.tokenProxy,{
     method:'POST',
     headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body:new URLSearchParams({grant_type:'authorization_code',client_id:WHOOP.clientId,code,redirect_uri:WHOOP.redirectUri,code_verifier:verifier})
