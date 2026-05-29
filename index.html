@@ -1628,22 +1628,26 @@ async function proxyGet(path, token){
 
 async function fetchWhoopData(token){
   try{
-    dbgLog('[Whoop] Fetching data via proxy (v2 paths)...');
-    const[rec,slp,cyc]=await Promise.all([
+    dbgLog('[Whoop] Fetching recovery + cycle...');
+    const[rec,cyc]=await Promise.all([
       proxyGet('/developer/v2/recovery?limit=1',token),
-      proxyGet('/developer/v2/sleep?limit=1',token),
       proxyGet('/developer/v2/cycle?limit=1',token),
     ]);
-    dbgLog('[Whoop] Recovery raw:',rec);
-    dbgLog('[Whoop] Sleep raw:',slp);
-    dbgLog('[Whoop] Cycle raw:',cyc);
-    // Recovery score — from most recent scored recovery record
     const recRecord=rec?.records?.find(r=>r.score_state==='SCORED');
-    const slpRecord=slp?.records?.find(s=>s.score_state==='SCORED');
     const cycRecord=cyc?.records?.[0];
+
+    // Get sleep via the cycle ID embedded in recovery record
+    let slpScore=null;
+    const cycleId=recRecord?.cycle_id;
+    if(cycleId){
+      const slp=await proxyGet(`/developer/v2/cycle/${cycleId}/sleep`,token);
+      dbgLog('[Whoop] Sleep raw:',slp);
+      slpScore=slp?.score?.sleep_performance_percentage;
+    }
+
     const result={
       recovery:recRecord?.score?.recovery_score,
-      sleep:slpRecord?.score?.sleep_performance_percentage,
+      sleep:slpScore,
       strain:cycRecord?.score?.strain,
       hrv:recRecord?.score?.hrv_rmssd_milli?.toFixed(0),
       rhr:recRecord?.score?.resting_heart_rate
