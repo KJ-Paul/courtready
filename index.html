@@ -966,7 +966,7 @@ function HomeTab({whoopData,whoopConnected,onConnectWhoop,currentWeek}){
       
       {whoopConnected&&whoopData?(
         <div className="whoop-card">
-          <div className="whoop-score-lbl">Today's Recovery</div>
+          <div className="whoop-score-lbl" spellCheck="false">Today's Recovery</div>
           <div className="whoop-score" style={{color:scoreColor}}>{score!=null?Math.round(score):'—'}</div>
           <div className="whoop-metrics">
             <div className="whoop-metric">
