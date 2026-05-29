@@ -254,6 +254,34 @@ input,select,textarea{font-family:'Barlow',sans-serif;outline:none}
 .killer-name{color:var(--text)}
 .ki-high{background:rgba(255,107,107,.2);color:var(--red);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.05em}
 .ki-med{background:rgba(244,162,97,.15);color:var(--accent);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.05em}
+
+/* WORKOUT LOGGER (Hevy-style) */
+.wl-overlay{position:fixed;inset:0;background:var(--bg);z-index:150;display:flex;flex-direction:column;overflow:hidden}
+.wl-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.wl-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:var(--text)}
+.wl-body{flex:1;overflow-y:auto;padding:12px 16px 80px}
+.wl-footer{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:rgba(13,17,23,.95);border-top:1px solid var(--border)}
+.ex-log-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;margin-bottom:10px}
+.ex-log-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.ex-prev{font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.4}
+.pr-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(212,225,87,.15);color:var(--ball);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px;letter-spacing:.05em}
+.set-header{display:grid;grid-template-columns:24px 1fr 1fr 32px;gap:6px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;padding:0 2px}
+.set-row{display:grid;grid-template-columns:24px 1fr 1fr 32px;gap:6px;align-items:center;margin-bottom:4px}
+.set-num{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text3);text-align:center}
+.set-inp{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 8px;font-size:14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-align:center;width:100%}
+.set-inp:focus{border-color:var(--court-line)}
+.set-inp.pr-set{border-color:var(--ball)!important;background:rgba(212,225,87,.08)}
+.set-del{background:transparent;color:var(--text3);font-size:16px;padding:4px;border-radius:4px;cursor:pointer;text-align:center}
+.add-set-btn{background:transparent;border:1px dashed var(--border2);border-radius:6px;color:var(--text3);font-size:12px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:7px;width:100%;margin-top:4px;cursor:pointer;transition:all .15s}
+.add-set-btn:hover{border-color:var(--court-line);color:var(--court-line)}
+.pr-flash{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--ball);color:#1a1a00;padding:8px 20px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;z-index:400;white-space:nowrap}
+.prev-sessions{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:10px}
+.ps-head{background:var(--surface2);padding:9px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em}
+.ps-ex{padding:8px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.ps-ex:last-child{border-bottom:none}
+.ps-ex-name{color:var(--text);font-weight:600;margin-bottom:2px}
+.ps-ex-sets{color:var(--text2)}
+
 </style>
 </head>
 <body>
@@ -520,6 +548,157 @@ function VideoCard({vid,title='Exercise demo'}){
           <div className="play-btn">▶</div>
         </div>
       )}
+    </div>
+  );
+}
+
+
+// ── WORKOUT LOGGER (Hevy-style) ──────────────────────────────────────────
+function WorkoutLogger({block, onClose}){
+  const exercises=(block==='B'?GYM_B:GYM_C).flatMap(s=>s.exs);
+  const[sets,setSets]=useState(()=>{const o={};exercises.forEach(ex=>{o[ex.name]=[];});return o;});
+  const[prFlash,setPrFlash]=useState('');
+  const prs=ls('cr_prs',{});
+  const wHistory=ls('cr_workout_log',[]);
+  const lastSession=wHistory.find(s=>s.block===block);
+
+  function getLastSets(exName){
+    if(!lastSession)return null;
+    return lastSession.exercises?.find(e=>e.name===exName)?.sets||null;
+  }
+  function getPR(exName){return prs[exName]||null;}
+
+  function addSet(exName,copyLast=false){
+    setSets(prev=>{
+      const curr=prev[exName]||[];
+      const last=curr[curr.length-1];
+      const newSet=copyLast&&last?{...last,done:false}:{weight:'',reps:'',done:false};
+      return{...prev,[exName]:[...curr,newSet]};
+    });
+  }
+  function updateSet(exName,idx,field,val){
+    setSets(prev=>({...prev,[exName]:prev[exName].map((s,i)=>i===idx?{...s,[field]:val}:s)}));
+  }
+  function delSet(exName,idx){
+    setSets(prev=>({...prev,[exName]:prev[exName].filter((_,i)=>i!==idx)}));
+  }
+  function toggleDone(exName,idx){
+    setSets(prev=>({...prev,[exName]:prev[exName].map((s,i)=>i===idx?{...s,done:!s.done}:s)}));
+  }
+
+  function isNewPR(exName,weight,reps){
+    const pr=prs[exName];
+    if(!weight||!reps)return false;
+    const w=parseFloat(weight),r=parseInt(reps);
+    if(!pr)return true;
+    return w>pr.weight||(w===pr.weight&&r>pr.reps);
+  }
+
+  function finishWorkout(){
+    const newPrs={...prs};
+    let prCount=0;
+    const savedExs=[];
+
+    Object.entries(sets).forEach(([exName,exSets])=>{
+      const completedSets=exSets.filter(s=>s.weight&&s.reps);
+      if(!completedSets.length)return;
+      savedExs.push({name:exName,sets:completedSets});
+      completedSets.forEach(s=>{
+        const w=parseFloat(s.weight),r=parseInt(s.reps);
+        const pr=newPrs[exName];
+        if(!pr||w>pr.weight||(w===pr.weight&&r>pr.reps)){
+          newPrs[exName]={weight:w,reps:r,date:todayStr()};prCount++;
+        }
+      });
+    });
+
+    lss('cr_prs',newPrs);
+    const session={id:Date.now(),date:todayStr(),week:currentWeekNum(),block,exercises:savedExs};
+    lss('cr_workout_log',[session,...wHistory]);
+
+    // Also log to sessions
+    const sessions=ls('cr_sessions',[]);
+    lss('cr_sessions',[{id:Date.now()+1,date:todayStr(),week:currentWeekNum(),block,
+      exercise:`Block ${block} workout`,source:'train',dur:block==='B'?'50':'40',
+      notes:`${savedExs.length} exercises · ${Object.values(sets).flat().filter(s=>s.weight&&s.reps).length} sets${prCount>0?` · 🏆 ${prCount} new PR${prCount>1?'s':''}!`:''}`,
+      rating:0},...sessions]);
+
+    if(prCount>0){
+      setPrFlash(`🏆 ${prCount} new PR${prCount>1?'s':''}`);
+      setTimeout(()=>{setPrFlash('');onClose();},2000);
+    }else{onClose();}
+  }
+
+  const totalSets=Object.values(sets).flat().filter(s=>s.weight&&s.reps).length;
+
+  return(
+    <div className="wl-overlay">
+      {prFlash&&<div className="pr-flash">{prFlash}</div>}
+      <div className="wl-header">
+        <div>
+          <div className="wl-title">Block {block} · {block==='B'?'Lower body + Core':'Upper body'}</div>
+          <div style={{fontSize:11,color:'var(--text3)',marginTop:2}}>{todayStr()} · {totalSets} sets logged</div>
+        </div>
+        <button className="btn btn-outline btn-sm" onClick={onClose}>✕ Close</button>
+      </div>
+      <div className="wl-body">
+        {exercises.map((ex,ei)=>{
+          const pr=getPR(ex.name);
+          const lastSets=getLastSets(ex.name);
+          const exSets=sets[ex.name]||[];
+          return(
+            <div className="ex-log-card" key={ei}>
+              <div className="ex-log-name">
+                {ex.name}
+                {pr&&<span className="pr-badge">🏆 PR {pr.weight}kg × {pr.reps}</span>}
+              </div>
+              {lastSets&&lastSets.length>0&&(
+                <div className="ex-prev">Last: {lastSets.map(s=>`${s.weight}kg×${s.reps}`).join(' · ')}</div>
+              )}
+              {exSets.length>0&&(
+                <>
+                  <div className="set-header"><span>#</span><span>KG</span><span>REPS</span><span/></div>
+                  {exSets.map((s,si)=>{
+                    const isPR=isNewPR(ex.name,s.weight,s.reps);
+                    return(
+                      <div className="set-row" key={si}>
+                        <div className="set-num" style={{color:s.done?'var(--court-line)':'var(--text3)'}}>{si+1}</div>
+                        <input className={`set-inp${isPR?' pr-set':''}`} type="number" placeholder="0" value={s.weight}
+                          onChange={e=>updateSet(ex.name,si,'weight',e.target.value)} min="0" step="0.5"/>
+                        <input className={`set-inp${isPR?' pr-set':''}`} type="number" placeholder="0" value={s.reps}
+                          onChange={e=>updateSet(ex.name,si,'reps',e.target.value)} min="0"/>
+                        <button className="set-del" onClick={()=>delSet(ex.name,si)}>✕</button>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+              <button className="add-set-btn" onClick={()=>addSet(ex.name,true)}>
+                + Add set{lastSets&&lastSets.length>0&&exSets.length===0?' (copy last)':''}
+              </button>
+            </div>
+          );
+        })}
+
+        {lastSession&&(
+          <>
+            <div style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:11,fontWeight:700,color:'var(--text3)',textTransform:'uppercase',letterSpacing:'.1em',margin:'16px 0 8px'}}>Previous session · {lastSession.date}</div>
+            <div className="prev-sessions">
+              {lastSession.exercises?.map((ex,i)=>(
+                <div className="ps-ex" key={i}>
+                  <div className="ps-ex-name">{ex.name}</div>
+                  <div className="ps-ex-sets">{ex.sets.map(s=>`${s.weight}kg × ${s.reps}`).join(' · ')}</div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+      <div className="wl-footer">
+        <button className="btn btn-primary btn-full" onClick={finishWorkout} style={{fontSize:15}}>
+          Finish workout · {totalSets} sets
+        </button>
+      </div>
     </div>
   );
 }
@@ -901,12 +1080,14 @@ function TrainTab(){
   const[gymSub,setGymSub]=useState('B');
   const[logPreset,setLogPreset]=useState(null);
   const[logSaved,setLogSaved]=useState(false);
+  const[workoutActive,setWorkoutActive]=useState(null); // 'B' or 'C'
 
   function handleLog(preset){setLogPreset(preset);setLogSaved(false);}
   function closeLog(saved){setLogPreset(null);if(saved){setLogSaved(true);setTimeout(()=>setLogSaved(false),2500);}}
 
   return(
     <div className="pg">
+      {workoutActive&&<WorkoutLogger block={workoutActive} onClose={()=>{setWorkoutActive(null);setLogSaved(true);setTimeout(()=>setLogSaved(false),2500);}}/>}
       {logPreset&&<QuickLogModal preset={logPreset} onClose={closeLog}/>}
       {logSaved&&<div style={{position:'fixed',bottom:80,left:'50%',transform:'translateX(-50%)',background:'var(--court)',color:'#fff',padding:'8px 20px',borderRadius:20,fontSize:13,fontWeight:600,zIndex:200,whiteSpace:'nowrap'}}>Session logged ✓</div>}
 
@@ -931,6 +1112,10 @@ function TrainTab(){
             <button className={`snbtn${gymSub==='B'?' on':''}`} onClick={()=>setGymSub('B')}>Block B · Lower body</button>
             <button className={`snbtn${gymSub==='C'?' on':''}`} onClick={()=>setGymSub('C')}>Block C · Upper body</button>
           </div>
+          <button className="btn btn-primary btn-full" style={{marginBottom:12,fontSize:15}}
+            onClick={()=>setWorkoutActive(gymSub)}>
+            🏋️ Start Block {gymSub} workout
+          </button>
           {(gymSub==='B'?GYM_B:GYM_C).map((section,si)=>(
             <div className="card" key={si}>
               <div className="card-title">{section.section}</div>
@@ -1341,8 +1526,8 @@ async function initiateWhoopAuth(){
   const verifier=await genVerifier();
   const challenge=await genChallenge(verifier);
   const state=btoa(Math.random().toString());
-  sessionStorage.setItem('whoop_verifier',verifier);
-  sessionStorage.setItem('whoop_state',state);
+  localStorage.setItem('whoop_verifier',verifier);
+  localStorage.setItem('whoop_state',state);
   const params=new URLSearchParams({
     client_id:WHOOP.clientId,
     redirect_uri:WHOOP.redirectUri,
@@ -1356,14 +1541,19 @@ async function initiateWhoopAuth(){
 }
 
 async function exchangeWhoopCode(code){
-  const verifier=sessionStorage.getItem('whoop_verifier');
-  if(!verifier)throw new Error('No code verifier');
+  const verifier=localStorage.getItem('whoop_verifier');
+  if(!verifier)throw new Error('PKCE verifier missing — please try connecting again.');
+  localStorage.removeItem('whoop_verifier');
+  localStorage.removeItem('whoop_state');
   const res=await fetch(WHOOP.tokenUrl,{
     method:'POST',
     headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body:new URLSearchParams({grant_type:'authorization_code',client_id:WHOOP.clientId,code,redirect_uri:WHOOP.redirectUri,code_verifier:verifier})
   });
-  if(!res.ok){const t=await res.text();throw new Error(`Token exchange failed: ${t}`);}
+  if(!res.ok){
+    const t=await res.text();
+    throw new Error(`Token exchange failed (${res.status}): ${t}`);
+  }
   return res.json();
 }
 
@@ -1415,25 +1605,36 @@ function App(){
   const[whoopToken,setWhoopToken]=useState(()=>ls('cr_whoop_token',null));
   const[whoopData,setWhoopData]=useState(null);
   const[authLoading,setAuthLoading]=useState(false);
+  const[whoopError,setWhoopError]=useState('');
   const currentWeek=currentWeekNum();
 
-  // Handle Whoop OAuth callback
+  // Handle Whoop OAuth callback — stash code before lock screen, process after unlock
   useEffect(()=>{
     const params=new URLSearchParams(window.location.search);
     const code=params.get('code');
     if(code){
-      setAuthLoading(true);
+      localStorage.setItem('whoop_pending_code',code);
       window.history.replaceState({},'',window.location.pathname);
-      exchangeWhoopCode(code).then(data=>{
-        if(data.access_token){
-          lss('cr_whoop_token',data.access_token);
-          if(data.refresh_token)lss('cr_whoop_refresh',data.refresh_token);
-          setWhoopToken(data.access_token);
-        }
-      }).catch(e=>console.error('Whoop auth error:',e))
-        .finally(()=>setAuthLoading(false));
     }
   },[]);
+
+  // Process pending Whoop code once app is unlocked
+  useEffect(()=>{
+    if(locked||setupLock)return;
+    const code=localStorage.getItem('whoop_pending_code');
+    if(!code)return;
+    localStorage.removeItem('whoop_pending_code');
+    setAuthLoading(true);
+    setWhoopError('');
+    exchangeWhoopCode(code).then(data=>{
+      if(data.access_token){
+        lss('cr_whoop_token',data.access_token);
+        if(data.refresh_token)lss('cr_whoop_refresh',data.refresh_token);
+        setWhoopToken(data.access_token);
+      }else{setWhoopError('No access token received.');}
+    }).catch(e=>{setWhoopError(e.message||'Connection failed');console.error('Whoop:',e);})
+      .finally(()=>setAuthLoading(false));
+  },[locked,setupLock]);
 
   // Fetch Whoop data when token available
   useEffect(()=>{
@@ -1465,7 +1666,7 @@ function App(){
 
   if(locked)return<LockScreen onUnlock={()=>setLocked(false)}/>;
   if(setupLock)return<LockScreen onUnlock={()=>{setSetupLock(false);setShowSettings(true);}}/>;
-  if(authLoading)return<div style={{display:'flex',height:'100vh',alignItems:'center',justifyContent:'center',background:'var(--bg)',flexDirection:'column',gap:12}}><div style={{fontSize:24,color:'var(--court-line)'}}>Connecting Whoop…</div><div style={{fontSize:12,color:'var(--text3)'}}>One moment</div></div>;
+
 
   const TABS=[
     {id:'home',icon:'🏠',label:'Home'},
@@ -1479,6 +1680,9 @@ function App(){
 
   return(
     <div className="app">
+      {authLoading&&<div style={{position:'fixed',top:0,left:0,right:0,background:'var(--court)',color:'#fff',textAlign:'center',padding:'8px',fontSize:13,fontWeight:600,zIndex:999}}>Connecting Whoop…</div>}
+      {whoopError&&<div style={{position:'fixed',top:0,left:0,right:0,background:'var(--red)',color:'#fff',textAlign:'center',padding:'8px 12px',fontSize:12,zIndex:999,display:'flex',justifyContent:'space-between',alignItems:'center'}}><span>Whoop error: {whoopError}</span><button style={{background:'transparent',color:'#fff',fontWeight:700}} onClick={()=>setWhoopError('')}>✕</button></div>}
+      <div className="app">
       <div className="hdr">
         <div className="hdr-title">Court<span>Ready</span></div>
         <div className="hdr-right">
@@ -1519,6 +1723,7 @@ function App(){
           </button>
         ))}
       </div>
+    </div>
     </div>
   );
 }
