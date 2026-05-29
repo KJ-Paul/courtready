@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CourtReady">
+<title>CourtReady</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--court:#2D6A4F;--court-l:#40916C;--court-line:#74C69D;--accent:#F4A261;--hot:#E76F51;--ball:#D4E157;--bg:#0D1117;--bg2:#161B22;--surface:#21262D;--surface2:#2D333B;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);--text:#E6EDF3;--text2:#8B949E;--text3:#6E7681;--red:#FF6B6B;--purple:#A78BFA;--r:8px;--rl:14px;--nav:64px;--hdr:52px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Barlow',sans-serif;color:var(--text)}
+#root{height:100%;display:flex;flex-direction:column}
+button{font-family:'Barlow',sans-serif;cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:'Barlow',sans-serif;outline:none}
+.bc{font-family:'Barlow Condensed',sans-serif}
+/* LAYOUT */
+.app{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.hdr{height:var(--hdr);background:rgba(13,17,23,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;z-index:50;position:relative}
+.hdr-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:var(--court-line)}
+.hdr-title span{color:var(--accent)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.whoop-chip{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em}
+.whoop-dot{width:7px;height:7px;border-radius:50%;background:var(--text3)}
+.whoop-dot.green{background:var(--court-line)}
+.whoop-dot.amber{background:var(--accent)}
+.whoop-dot.red{background:var(--red)}
+.gear-btn{background:transparent;color:var(--text3);font-size:20px;padding:4px;border-radius:6px}
+.gear-btn:hover{color:var(--text);background:var(--surface)}
+.tab-content{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(var(--nav) + 16px)}
+.tab-content::-webkit-scrollbar{width:3px}
+.tab-content::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:2px}
+/* BOTTOM NAV */
+.bnav{height:var(--nav);background:rgba(13,17,23,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;align-items:center;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent;color:var(--text3);padding:8px 0;border-radius:0;transition:color .15s}
+.bnav-btn.on{color:var(--court-line)}
+.bnav-icon{font-size:20px;line-height:1}
+.bnav-lbl{font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif}
+/* SECTION HEADS */
+.pg{padding:16px}
+.sec-head{display:flex;align-items:center;gap:10px;margin:20px 0 12px}
+.sec-head:first-child{margin-top:0}
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--court-line);white-space:nowrap}
+.sec-line{height:1px;flex:1;background:linear-gradient(90deg,var(--court),transparent)}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px}
+.card:last-child{margin-bottom:0}
+.card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.card-sub{font-size:12px;color:var(--text2);line-height:1.5}
+/* INFO BOXES */
+.info{border-radius:var(--r);padding:10px 14px;font-size:13px;line-height:1.6;margin-bottom:10px}
+.info.green{background:rgba(64,145,108,.12);color:var(--court-line);border-left:3px solid var(--court);border-radius:0 var(--r) var(--r) 0}
+.info.orange{background:rgba(244,162,97,.1);color:var(--accent);border-left:3px solid var(--accent);border-radius:0 var(--r) var(--r) 0}
+.info.red{background:rgba(255,107,107,.1);color:var(--red);border-left:3px solid var(--red);border-radius:0 var(--r) var(--r) 0}
+/* ROWS */
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.row:last-child{border-bottom:none}
+.rn{color:var(--text)}
+.rv{color:var(--text3);font-size:12px;text-align:right}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.05em;text-transform:uppercase;margin-left:5px;vertical-align:middle}
+.tg{background:rgba(116,198,157,.15);color:var(--court-line)}
+.tp{background:rgba(167,139,250,.15);color:var(--purple)}
+.ta{background:rgba(244,162,97,.15);color:var(--accent)}
+.tr{background:rgba(255,107,107,.15);color:var(--red)}
+.tm{background:rgba(212,225,87,.15);color:var(--ball)}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:var(--r);font-size:13px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;text-transform:uppercase;transition:all .15s}
+.btn-primary{background:var(--court);color:#fff}
+.btn-primary:hover{background:var(--court-l)}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-outline:hover{border-color:var(--court-line);color:var(--court-line)}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-full{width:100%}
+/* SUBNAV */
+.subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.snbtn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 14px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.snbtn.on{background:var(--court);border-color:var(--court);color:#fff}
+/* VIDEO */
+.video-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--r);background:var(--bg2);margin:10px 0}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:var(--r)}
+.video-thumb{position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.video-thumb img{width:100%;height:100%;object-fit:cover;border-radius:var(--r)}
+.play-btn{position:absolute;width:52px;height:52px;background:rgba(0,0,0,.75);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid rgba(255,255,255,.5)}
+/* DRILL ACCORDION */
+.drill{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:8px;transition:border-color .15s}
+.drill.open{border-color:var(--court)}
+.drill-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;user-select:none}
+.drill-hdr:hover{background:var(--surface2)}
+.drill-htitle{font-size:14px;font-weight:600;color:var(--text)}
+.drill-hmeta{font-size:11px;color:var(--text3);margin-top:2px}
+.drill-chev{color:var(--text3);font-size:16px;transition:transform .2s;flex-shrink:0;margin-left:10px}
+.drill.open .drill-chev{transform:rotate(180deg)}
+.drill-body{border-top:1px solid var(--border);padding:14px;display:none;background:var(--bg2)}
+.drill.open .drill-body{display:block}
+.step{display:flex;gap:10px;margin-bottom:8px;font-size:13px}
+.stepn{min-width:20px;height:20px;border-radius:50%;background:var(--court);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.stept{color:var(--text2);line-height:1.5}
+.drill-tip{background:rgba(45,106,79,.15);border-left:3px solid var(--court);border-radius:0 6px 6px 0;padding:9px 12px;font-size:12px;color:var(--court-line);line-height:1.5;margin-top:8px}
+/* LOCK SCREEN */
+.lock{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;padding:32px}
+.lock-logo{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;text-transform:uppercase;color:var(--court-line);margin-bottom:6px}
+.lock-logo span{color:var(--accent)}
+.lock-sub{font-size:13px;color:var(--text3);margin-bottom:40px}
+.pin-dots{display:flex;gap:12px;margin-bottom:24px}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);transition:all .15s}
+.pin-dot.filled{background:var(--court-line);border-color:var(--court-line)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:240px}
+.pin-key{height:60px;border-radius:var(--rl);background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.pin-key:hover{background:var(--surface2);border-color:var(--court)}
+.pin-key:active{background:var(--court);color:#fff}
+.pin-key.zero{grid-column:2}
+.pin-key.del{background:transparent;border:none;color:var(--text3);font-size:16px}
+.bio-btn{margin-top:16px;background:transparent;border:1px solid var(--border2);color:var(--court-line);padding:10px 24px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer}
+.bio-btn:hover{border-color:var(--court-line)}
+.lock-err{color:var(--red);font-size:12px;margin-top:10px;min-height:18px}
+/* HOME TAB */
+.whoop-card{background:linear-gradient(135deg,var(--court) 0%,#1a3d2e 100%);border:1px solid rgba(116,198,157,.2);border-radius:var(--rl);padding:16px;margin-bottom:12px}
+.whoop-score{font-family:'Barlow Condensed',sans-serif;font-size:64px;font-weight:900;line-height:1;color:#fff}
+.whoop-score-lbl{font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.whoop-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.whoop-metric{background:rgba(0,0,0,.2);border-radius:var(--r);padding:8px;text-align:center}
+.whoop-metric-val{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:#fff}
+.whoop-metric-lbl{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.05em}
+.today-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:12px}
+.today-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;font-weight:700;margin-bottom:6px}
+.today-block-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--text);text-transform:uppercase;letter-spacing:.02em}
+.today-block-desc{font-size:12px;color:var(--text2);margin-top:3px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px;text-align:center}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--court-line)}
+.stat-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.notif-banner{background:rgba(212,225,87,.08);border:1px solid rgba(212,225,87,.2);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer}
+.notif-banner-text{font-size:13px;color:var(--ball);flex:1}
+/* SCHEDULE */
+.week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.week-nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:7px 14px;font-size:13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.05em}
+.week-nav-btn:hover{border-color:var(--border2);color:var(--text)}
+.week-lbl{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:var(--text);text-transform:uppercase;letter-spacing:.05em}
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.day-cell{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 3px;text-align:center;cursor:pointer;transition:all .15s;min-height:72px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.day-cell:hover:not(.fixed){border-color:var(--border2)}
+.day-cell.fixed{border-color:rgba(231,111,81,.25);background:rgba(231,111,81,.05);cursor:default}
+.day-cell.done{border-color:var(--court);background:rgba(45,106,79,.12)}
+.day-cell.today-cell{border-color:var(--accent)}
+.day-nm{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.day-blk{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text2);text-align:center;line-height:1.2;margin-top:2px}
+.day-done-icon{font-size:18px;color:var(--court-line)}
+.block-picker{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:12px}
+.bpick-day{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+.bpick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.bpick-opt{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;cursor:pointer;transition:all .15s;text-align:left}
+.bpick-opt:hover{border-color:var(--border2)}
+.bpick-opt.sel{border-color:var(--court);background:rgba(45,106,79,.12)}
+.bpick-letter{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;margin-bottom:1px}
+.bpick-name{font-size:11px;color:var(--text2);line-height:1.3}
+.rule-list{display:flex;flex-direction:column;gap:6px}
+.rule-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:flex;gap:10px;align-items:flex-start}
+.rule-num{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--court);line-height:1;min-width:26px}
+.rule-text{font-size:12px;color:var(--text2);line-height:1.5}
+.rule-text strong{color:var(--text);font-weight:600}
+/* LOG TAB */
+.log-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:14px}
+.lf-row{margin-bottom:10px}
+.lf-lbl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.lf-input{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:8px 12px;font-size:13px;font-family:'Barlow',sans-serif}
+.lf-input:focus{border-color:var(--court-line)}
+.lf-select{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:8px 12px;font-size:13px;appearance:none}
+.lf-textarea{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:8px 12px;font-size:13px;min-height:70px;resize:none;font-family:'Barlow',sans-serif}
+.lf-textarea:focus{border-color:var(--court-line)}
+.rating-row{display:flex;gap:6px}
+.rating-btn{flex:1;height:36px;border-radius:var(--r);background:var(--bg2);border:1px solid var(--border);color:var(--text3);font-size:16px;cursor:pointer;transition:all .15s}
+.rating-btn.sel{background:var(--court);border-color:var(--court);color:#fff}
+.session-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;margin-bottom:8px}
+.si-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.si-block{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.si-date{font-size:11px;color:var(--text3)}
+.si-notes{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.4}
+.si-meta{display:flex;gap:10px;margin-top:6px}
+.si-chip{font-size:10px;padding:2px 7px;border-radius:4px;background:var(--bg2);color:var(--text3);font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.05em}
+/* SETTINGS */
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:12px}
+.settings-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border-bottom:none}
+.settings-label{font-size:13px;color:var(--text)}
+.settings-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.toggle{width:44px;height:24px;border-radius:12px;background:var(--surface2);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--court)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+.toggle.on::after{left:22px}
+/* SLEEP CALC */
+.sleep-calc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:12px}
+.calc-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.calc-row:last-child{margin-bottom:0}
+.calc-lbl{font-size:12px;color:var(--text2);min-width:90px}
+.calc-out{background:var(--bg2);border:1px solid var(--court);border-radius:var(--r);padding:12px 14px;margin-top:12px}
+.calc-out-val{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--court-line)}
+.calc-out-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+/* MILESTONE */
+.milestone{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;gap:12px;align-items:flex-start;margin-bottom:6px}
+.ms-wk{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;min-width:44px}
+.ms-text{font-size:12px;color:var(--text2);line-height:1.5}
+.ms-text strong{color:var(--text);font-weight:600}
+/* SPORT PROFILE SWITCHER */
+.profile-switch{display:flex;gap:6px;margin-bottom:16px}
+.profile-btn{flex:1;padding:10px;border-radius:var(--r);border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;transition:all .15s}
+.profile-btn.on{background:var(--court);border-color:var(--court);color:#fff}
+/* WHOOP CONNECT */
+.whoop-connect{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:1px solid rgba(255,255,255,.1);border-radius:var(--rl);padding:20px;text-align:center;margin-bottom:12px}
+.whoop-connect h3{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:var(--text);margin-bottom:6px;text-transform:uppercase}
+.whoop-connect p{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.5}
+/* RECOVERY SCORE COLORS */
+.score-high{color:#74C69D}
+.score-med{color:#F4A261}
+.score-low{color:#FF6B6B}
+/* WEEK PLAN DAYS */
+.wp-day{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:6px}
+.wp-day-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.wp-day-num{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.wp-day-type{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.05em;text-transform:uppercase}
+.dt-lower{background:rgba(244,162,97,.15);color:var(--accent)}
+.dt-upper{background:rgba(167,139,250,.15);color:var(--purple)}
+.dt-hybrid{background:rgba(116,198,157,.15);color:var(--court-line)}
+.dt-isolation{background:rgba(255,107,107,.15);color:var(--red)}
+.wp-exercises{font-size:12px;color:var(--text2);line-height:1.6}
+.wp-equip{font-size:11px;color:var(--text3);margin-top:3px}
+.wp-vid-btn{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:700;color:var(--court-line);text-decoration:none;letter-spacing:.05em;text-transform:uppercase;background:rgba(64,145,108,.12);padding:4px 9px;border-radius:4px;border:1px solid rgba(64,145,108,.25)}
+/* WEEK BTN */
+.wk-btn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:all .15s}
+.wk-btn.on{background:var(--court);border-color:var(--court);color:#fff}
+.wk-nav-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+/* INJURY PREV */
+.prev-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:10px}
+.prev-head{background:var(--surface2);padding:10px 14px;display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em}
+.prev-dot{width:8px;height:8px;border-radius:50%}
+.prev-body{padding:0 14px}
+/* TIMELINE (sleep) */
+.tl{padding-left:20px;position:relative}
+.tl::before{content:'';position:absolute;left:4px;top:6px;bottom:6px;width:1px;background:var(--border2)}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-dot{position:absolute;left:-17px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--court);border:2px solid var(--bg)}
+.tl-time{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.05em;margin-bottom:2px}
+.tl-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.tl-desc{font-size:12px;color:var(--text2);line-height:1.4}
+/* KILLER ROWS */
+.killer-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.killer-row:last-child{border-bottom:none}
+.killer-name{color:var(--text)}
+.ki-high{background:rgba(255,107,107,.2);color:var(--red);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.05em}
+.ki-med{background:rgba(244,162,97,.15);color:var(--accent);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div id="root"><div style="display:flex;height:100vh;align-items:center;justify-content:center;background:#0D1117;flex-direction:column;gap:12px"><div style="font-family:'sans-serif';font-size:24px;font-weight:900;color:#74C69D;letter-spacing:.05em">COURTREADY</div><div style="font-size:12px;color:#6E7681">Loading...</div></div></div>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useCallback}=React;
+
+// ═══════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════
+const WHOOP={
+  clientId:'ce65ef88-78f3-4e53-b5f6-ad6fe3c170a3',
+  redirectUri:'https://kj-paul.github.io/courtready',
+  authUrl:'https://api.prod.whoop.com/oauth/oauth2/auth',
+  tokenUrl:'https://api.prod.whoop.com/oauth/oauth2/token',
+  apiBase:'https://api.prod.whoop.com/developer/v1',
+  scopes:'read:recovery read:sleep read:workout read:cycles'
+};
+const RP_ID='kj-paul.github.io';
+const DAYS=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+const TODAY_IDX=(()=>{const d=new Date().getDay();return d===0?6:d-1;})();
+
+const BLOCKS_TENNIS=[
+  {id:'A',name:'Match play',color:'#E76F51',bg:'rgba(231,111,81,.15)',desc:'Singles or doubles · 60–90 min',freq:'2× / week'},
+  {id:'B',name:'Lower body + core',color:'#A78BFA',bg:'rgba(167,139,250,.15)',desc:'Smith squats, RDL, reverse lunges · ~50 min',freq:'1× / week'},
+  {id:'C',name:'Upper body gym',color:'#A78BFA',bg:'rgba(167,139,250,.15)',desc:'Incline press, cable row, face pull · ~40 min',freq:'1× / week'},
+  {id:'D',name:'Machine drills',color:'#D4E157',bg:'rgba(212,225,87,.15)',desc:'Footwork + shot patterns · 35 min max',freq:'2× / week'},
+  {id:'E',name:'Machine intervals',color:'#D4E157',bg:'rgba(212,225,87,.15)',desc:'10-ball rally bursts · 20 min',freq:'1× / week'},
+  {id:'F',name:'Active recovery',color:'#6E7681',bg:'rgba(110,118,129,.15)',desc:'Walk, Zone 2 jog, foam roll, mobility',freq:'as needed'},
+  {id:'FLAG',name:'Flag football',color:'#E76F51',bg:'rgba(231,111,81,.12)',desc:'Fixed Thursday commitment',freq:'fixed'},
+  {id:'REST',name:'Rest',color:'#30363D',bg:'rgba(48,54,61,.3)',desc:'Full rest — non-negotiable',freq:''},
+];
+
+const DRILLS=[
+  {id:'wide',name:'Wide ball recovery',tag:'footwork',dur:'10 min',vid:null,
+   steps:['Machine alternates wide FH / wide BH, medium pace, 6-sec interval.',
+          'Start at centre mark. Crossover step to each ball, hit, side-shuffle back to centre.',
+          '10 balls per set · rest 60 sec · 4 sets. Focus on recovery speed, not power.'],
+   tip:'Best drill for feeling light on your feet. The recovery step back to centre is what most intermediates skip.'},
+  {id:'depth',name:'Depth control',tag:'shot quality',dur:'10 min',vid:null,
+   steps:['Machine feeds mid-court, medium pace, 5-sec interval. Cone 1m inside each baseline corner as target.',
+          'Hit 15 FH to one corner target, then 15 BH to the other.',
+          'Count how many land within 2m of cone. Track weekly — direct tournament metric.'],
+   tip:''},
+  {id:'approach',name:'Approach & finish',tag:'net game',dur:'10 min',vid:null,
+   steps:['Machine feeds short (service box), medium-low pace.',
+          'Start at baseline. Move in on feed, hit approach crosscourt, advance to net.',
+          'Machine fires second ball — finish with volley. 10 reps · rest 90 sec · 3 sets.'],
+   tip:'Most intermediates avoid the net. Building comfort here gives you a real edge in tournaments.'},
+  {id:'topspin',name:'High topspin handler',tag:'defence',dur:'8 min',vid:null,
+   steps:['Machine set to heavy topspin, high bounce, medium-slow pace to BH.',
+          'Take ball early at top of bounce, or let it drop — don\'t get caught between. 20 BH then 20 FH.',
+          'Increase pace one level per week once positioning is comfortable.'],
+   tip:''},
+  {id:'serve1',name:'Serve + 1 live ball',tag:'pattern play',dur:'10 min',vid:null,
+   steps:['Machine near opposite service box simulating a return. Medium pace to FH or BH.',
+          'Serve, then immediately recover to ready position at baseline.',
+          'Machine fires — play with intention: attack crosscourt or redirect down the line. 15 reps each side.'],
+   tip:'Builds the habit of moving after the serve — one of the biggest gaps between recreational and tournament players.'},
+];
+
+const GYM_B=[
+  {section:'Warm-up · 5–8 min',exs:[
+    {name:'Hip circles + leg swings',sets:'2 × 10 each',vid:null},
+    {name:'Glute bridge',sets:'2 × 12',vid:null},
+    {name:'Lateral band walk',sets:'2 × 15 each',vid:null},
+  ]},
+  {section:'Main strength',exs:[
+    {name:'Smith machine squat',sets:'4 × 6–8 heavy',tag:'compound',vid:null},
+    {name:'Romanian deadlift (barbell)',sets:'3 × 10',vid:null},
+    {name:'Dumbbell reverse lunge',sets:'3 × 10 each',vid:null},
+    {name:'Cable lateral step & pull',sets:'3 × 12 each',vid:null},
+    {name:'Single-leg calf raise',sets:'3 × 15 · slow eccentric',vid:null},
+  ]},
+  {section:'Core finisher · 10 min',exs:[
+    {name:'Dead bug',sets:'3 × 8 each',vid:null},
+    {name:'Pallof press (cable)',sets:'3 × 12 each side',vid:null},
+    {name:'Cable woodchop',sets:'3 × 12 each',vid:null},
+  ]},
+];
+
+const GYM_C=[
+  {section:'Main strength + shoulder health',exs:[
+    {name:'Smith machine incline press',sets:'4 × 8',vid:null},
+    {name:'Cable row (seated)',sets:'4 × 10',vid:null},
+    {name:'Dumbbell shoulder press',sets:'3 × 10',vid:null},
+    {name:'Cable face pull',sets:'3 × 15',tag:'injury prevention',vid:null},
+    {name:'Single-arm dumbbell row',sets:'3 × 10 each',vid:null},
+    {name:'External rotation (cable)',sets:'3 × 15 each',tag:'injury prevention',vid:null},
+    {name:'Wrist curl + reverse curl',sets:'2 × 15 each',tag:'elbow protection',vid:null},
+  ]},
+];
+
+const INTERVAL_PROG=[
+  {weeks:'Weeks 1–3',sets:'8 sets',rest:'45 sec rest'},
+  {weeks:'Weeks 4–6',sets:'10 sets',rest:'35 sec rest'},
+  {weeks:'Weeks 7–9',sets:'12 sets',rest:'25 sec rest'},
+  {weeks:'Week 10 deload',sets:'6 sets',rest:'60 sec rest'},
+];
+
+const DAILY_MOBILITY=[
+  {name:'Thread the needle',tags:'T-spine · shoulder',dur:'45 sec/side',vid:'90v83LJN8kM',
+   steps:['On hands and knees, hips over knees, shoulders over wrists.',
+          'Slide your right arm under your body along the floor, rotating your thoracic spine until your right shoulder and ear touch the ground.',
+          'Hold and breathe for 45 seconds. Return and switch sides.'],
+   tip:'The shoulder restriction you started with isn\'t the shoulder — it\'s the mid-back. This is the fix.'},
+  {name:'90/90 hip stretch',tags:'hips · lower back',dur:'45 sec/side',vid:'Lo1syqrtMbM',
+   steps:['Sit with front leg at 90° (shin parallel to body) and back leg at 90° behind you.',
+          'Sit tall, hinge slightly forward over your front shin. Feel the deep stretch in the outer hip.',
+          'Hold 45 sec, breathe deeply. Switch sides. Keep chest tall — don\'t round the back.'],
+   tip:'Tight hips pull your pelvis forward — a direct cause of your lower back weakness. Highest-return stretch in the program.'},
+  {name:'Kneeling spiderman rock',tags:'hip flexor · groin',dur:'45 sec/side',vid:'kuUCcWlotGA',
+   steps:['Kneel on one knee, front foot flat. Hands on floor inside front foot.',
+          'Slowly rock hips forward until you feel the hip flexor stretch on the kneeling side. Hold 2 sec.',
+          'Rock back slightly and repeat. Continuous slow rocking for 45 sec per side.'],
+   tip:''},
+  {name:'Prone press-up',tags:'lower back · T-spine',dur:'1 min total',vid:'-oe8IA1KYjY',
+   steps:['Lie face down, hands under shoulders.',
+          'Press upper body up while keeping hips on the floor. Go only as far as comfortable.',
+          'Hold 5 seconds at top, lower slowly. 6–8 reps over 1 minute. Let the lower back relax.'],
+   tip:'Directly counters forward flexion from sitting that compresses your lumbar discs.'},
+  {name:'Ankle mobilization + calf hang',tags:'ankles · achilles',dur:'45 sec/side',vid:'SckwkFdic50',
+   steps:['Half-kneeling, front foot flat. Drive front knee forward over toes, heel down. Rock in/out for 45 sec each side.',
+          'Then stand on step edge, heels hanging off. Lower both heels slowly, hold 20 sec.',
+          'Rise back up. 3 slow reps. No bouncing.'],
+   tip:'Stiff ankles reduce your split-step explosion and load the achilles. Two minutes here pays off every time you split-step.'},
+];
+
+const PREMATCH_MOBILITY=[
+  {name:'Progressive arm circles',tags:'shoulder warm-up',dur:'2 min',vid:null,
+   steps:['Arms out to sides, make small circles — 10 forward, 10 backward.',
+          'Gradually increase circle size each rep until doing full windmill circles.',
+          'Finish with 10 cross-body arm swings each side.'],
+   tip:''},
+  {name:'Off-knees to downward dog',tags:'scapula · shoulder',dur:'1 min',vid:'Tv_Qnh_h-aE',
+   steps:['Start in push-up position. Without bending elbows, round upper back toward ceiling (scap push-up) — hold 2 sec.',
+          'Press hips up and back into downward dog. Hold 5 sec, breathe into back of ribcage.',
+          'Return to start. 5–6 reps over 1 minute.'],
+   tip:'This activates the exact muscles missing when downward dog felt loaded.'},
+  {name:'Doorframe pec stretch + overhead reach',tags:'chest opening',dur:'30 sec/side',vid:null,
+   steps:['Stand in doorframe, forearm against frame at 90°, elbow at shoulder height.',
+          'Rotate body away from arm until you feel stretch across chest. Hold 30 sec.',
+          'Reach same arm overhead along frame — shifts stretch to lat. Hold 20 sec.'],
+   tip:'Forward shoulder posture limits your serve follow-through. This counters it before every match.'},
+];
+
+const WEEK_PLAN_DATA=[
+  // Week 1
+  {day:1,type:'lower',typeClass:'dt-lower',exs:'Kneeling spiderman rock · Kneeling adductor cossack rock · Supported squat prying (hip focus)',equip:'Upright support',vid:'2l-a5Rc21eM'},
+  {day:2,type:'upper',typeClass:'dt-upper',exs:'Bench straight arm T-spine extension · Heel sit T-spine extension/rotation · Prone press-up',equip:'Bench',vid:'zO5hLAdCQ50'},
+  {day:3,type:'hybrid',typeClass:'dt-hybrid',exs:'Kneeling spiderman ISO with rotation · Supported alternating lateral squat · Heels elevated toe touch squat',equip:'Heel elevation, hand elevation (optional)',vid:'cE0_1DU3id4'},
+  {day:4,type:'lower',typeClass:'dt-lower',exs:'Hooklying wide stance hip internal rotation · Rocking hip flexor mobilization · Supine hip flexed knee extension',equip:'None',vid:'8KvJUwfEnlA'},
+  {day:5,type:'upper',typeClass:'dt-upper',exs:'Prone neck nods & turns · Bench supported downward dog · Heel sit thread the needle',equip:'Bench',vid:'oepLWg7u0Sc'},
+  {day:6,type:'hybrid',typeClass:'dt-hybrid',exs:'90/90 ISO with thread the needle · Glute bridge to overhead diagonal reach · Dynamic pigeon',equip:'None',vid:'lHqGJG9V2kA'},
+  {day:7,type:'isolation',typeClass:'dt-isolation',exs:'Open ½ kneeling ankle mobilization · Deficit double leg calf raise',equip:'None',vid:'SckwkFdic50'},
+  // Week 2
+  {day:8,type:'lower',typeClass:'dt-lower',exs:'Supine alternating knee hugs · Wide stance rock on forearms · Supported squat prying (ankle focus)',equip:'Upright support',vid:'qZEjJhBOo0w'},
+  {day:9,type:'upper',typeClass:'dt-upper',exs:'Quadruped to downward dog · Heel sit T-spine ext/rot — hand behind · Seated lumbar rotation',equip:'None',vid:'sVEAonoVeBY'},
+  {day:10,type:'hybrid',typeClass:'dt-hybrid',exs:'Spiderman lunge · Alternating lateral squat (high transfer) · Toe touch squat',equip:'Hand elevation (optional)',vid:'mu6uSYjZiFA'},
+  {day:11,type:'lower',typeClass:'dt-lower',exs:'Stationary 90/90 hip switch · Rear foot elevated quad stretch · Stationary staggered stance hinge',equip:'Bench',vid:'HWn5lo6b8NQ'},
+  {day:12,type:'upper',typeClass:'dt-upper',exs:'Cat/cow · Prayer bench T-spine extension · Open half kneeling T-spine rotation',equip:'Bench',vid:'bbUiLMzxgzg'},
+  {day:13,type:'hybrid',typeClass:'dt-hybrid',exs:'Open ½ kneel windmill to elbow · Dynamic pigeon with T-spine rotation · Inchworm',equip:'None',vid:'KWaWw1cgW9M'},
+  {day:14,type:'isolation',typeClass:'dt-isolation',exs:'Wrist circles · Wrist flexor/extensor stretch · Tabletop wrist mobilization',equip:'None',vid:'FEcUgUDTy2U'},
+  // Week 3
+  {day:15,type:'lower',typeClass:'dt-lower',exs:'Spiderman lunge external rotation ISO · Frog rock · Goblet squat prying',equip:'Light weight',vid:'hLvj9hX0snQ'},
+  {day:16,type:'upper',typeClass:'dt-upper',exs:'Off-knees to down dog · Side lying simple sweep · Windshield wiper (feet down)',equip:'None',vid:'dJRVL5a6cxA'},
+  {day:17,type:'hybrid',typeClass:'dt-hybrid',exs:'Spiderman lunge with rotation · Alternating lateral squat (low transfer) · Toe touch squat to overhead reach',equip:'None',vid:'9wX_oBC5cRs'},
+  {day:18,type:'lower',typeClass:'dt-lower',exs:'90/90 hip switch · RFE quad stretch with overhead reach · Alternating lateral squat',equip:'Bench, hand elevation (optional)',vid:'JPj5n1RFLCo'},
+  {day:19,type:'upper',typeClass:'dt-upper',exs:'Cat/cow with forced exhale · Kneeling rotation/bend: hands behind head · 3-way child\'s pose reach',equip:'None',vid:'I-xMgTGz17s'},
+  {day:20,type:'hybrid',typeClass:'dt-hybrid',exs:'Lateral squat ISO to T-spine rotation · Supine pigeon pull-ins · Crab stretch',equip:'None',vid:'zbmtZPvdfvA'},
+  {day:21,type:'isolation',typeClass:'dt-isolation',exs:'Arm circles · Cross-body reach · Doorframe pec stretch · Overhead reach',equip:'None',vid:'E4Pjj8Nbj4Y'},
+  // Week 4
+  {day:22,type:'lower',typeClass:'dt-lower',exs:'Kneeling hip rock to hamstring mobilization · "Hurdle" step overs · Goblet squat to press out',equip:'Light weight',vid:'1tIrU2y8q88'},
+  {day:23,type:'upper',typeClass:'dt-upper',exs:'Off-knees scap push-up to down dog · Cat/cow with forced exhale · Thread the needle',equip:'None',vid:'qYtecLT0v2M'},
+  {day:24,type:'hybrid',typeClass:'dt-hybrid',exs:'Reverse lunge to diagonal reach · Lateral squat ISO to T-spine rotation · Dynamic pigeon',equip:'Light weight',vid:'U2YrP4iopEQ'},
+  {day:25,type:'lower',typeClass:'dt-lower',exs:'Supine active internal hip rotation · 90/90 hip switch · Spiderman lunge external rotation ISO',equip:'Wall space',vid:'GTZIbCF-PWo'},
+  {day:26,type:'upper',typeClass:'dt-upper',exs:'Tall heel sit hands clasped neck rolls · Off-knees scap push-up to down dog · Thread the needle',equip:'Bench',vid:'xhikCvQXMfY'},
+  {day:27,type:'hybrid',typeClass:'dt-hybrid',exs:'Loaded open half kneeling windmill · Reverse lunge to diagonal reach · 90/90 ISO with thread the needle',equip:'Light weight',vid:'cZEqFPvaBA8'},
+  {day:28,type:'isolation',typeClass:'dt-isolation',exs:'Open ½ kneeling ankle mobilization · Single-leg calf hang · Ankle circles',equip:'None',vid:'Sc-QNnA5MQc'},
+  // Week 5
+  {day:29,type:'lower',typeClass:'dt-lower',exs:'Spiderman lunge low pivot · 90/90 hip switch to forward lean · Kneeling hip rock to hamstring mobilization',equip:'Light weight',vid:'CmE48Vih2eA'},
+  {day:30,type:'upper',typeClass:'dt-upper',exs:'Downward dog to opposite toe tap · Cat/cow with forced exhale · Thread the needle',equip:'None',vid:'yoYnwBQtMCI'},
+  {day:31,type:'hybrid',typeClass:'dt-hybrid',exs:'Supported knee hug to single leg deadlift floor tap · Reverse lunge to diagonal reach · Dynamic pigeon',equip:'Light weight',vid:'sj7VYGeIuTE'},
+  {day:32,type:'lower',typeClass:'dt-lower',exs:'90/90 hip switch to forward lean · Supine active internal hip rotation · Spiderman lunge low pivot',equip:'Wall space, foot elevation',vid:'F3F7iLXn1ec'},
+  {day:33,type:'upper',typeClass:'dt-upper',exs:'Seated shoulder butterflies · Downward dog to opposite toe tap · Thread the needle',equip:'Wall space',vid:'2j4evJ2rptU'},
+  {day:34,type:'hybrid',typeClass:'dt-hybrid',exs:'Windmill · Loaded open half kneeling windmill · Reverse lunge to diagonal reach',equip:'Light weight',vid:'HNJ9Gmpu92E'},
+  {day:35,type:'isolation',typeClass:'dt-isolation',exs:'Wrist circles · Wrist flexor/extensor stretch · Prayer position mobilization',equip:'None',vid:'0gArOcJyU3M'},
+  // Week 6
+  {day:36,type:'lower',typeClass:'dt-lower',exs:'Pivot split squat · 90/90 hip switch to forward lean · Spiderman lunge low pivot',equip:'Light weight, balance support',vid:'hq399Ivz37g'},
+  {day:37,type:'upper',typeClass:'dt-upper',exs:'Bench T-spine extension to lift-offs · Downward dog to opposite toe tap · Cat/cow to thread the needle',equip:'Bench',vid:'3rxE9RjjL6M'},
+  {day:38,type:'hybrid',typeClass:'dt-hybrid',exs:'World\'s greatest stretch · Loaded windmill · Reverse lunge to diagonal reach',equip:'Balance support (optional)',vid:'nEKMcbPpfsQ'},
+  {day:39,type:'lower',typeClass:'dt-lower',exs:'Shin box · 90/90 hip switch to forward lean · Pivot split squat',equip:'Wall space, foot elevation, light weight',vid:'LgaCDBkqxqs'},
+  {day:40,type:'upper',typeClass:'dt-upper',exs:'Cat/cow to thread the needle · Bench T-spine extension to lift-offs · Seated shoulder butterflies',equip:'Bench, light weight',vid:'raG5kTi3efY'},
+  {day:41,type:'hybrid',typeClass:'dt-hybrid',exs:'Lateral squat windmill · World\'s greatest stretch · Loaded windmill',equip:'Light weight',vid:'NphXjI6ZEjA'},
+  {day:42,type:'isolation',typeClass:'dt-isolation',exs:'Arm circles · Cross-body reach · Doorframe pec stretch · Overhead reach · External rotation',equip:'None',vid:'7tIh5GmzkLk'},
+];
+
+const PREVENT_SECTIONS=[
+  {label:'Rotator cuff',color:'#E76F51',exs:[{name:'Cable external rotation',sets:'3 × 15 each'},{name:'Cable face pull',sets:'3 × 15'}]},
+  {label:'Tennis elbow',color:'#F4A261',exs:[{name:'Wrist curl + reverse curl',sets:'2 × 15 each'}]},
+  {label:'Achilles + lower leg',color:'#74C69D',exs:[{name:'Single-leg calf raise — slow eccentric',sets:'3 × 15 each'}]},
+  {label:'Groin / adductor',color:'#A78BFA',exs:[{name:'Copenhagen plank',sets:'3 × 20 sec each'}]},
+];
+
+const RULES=[
+  {n:'1',text:<><strong>No gym the day before a match.</strong> Dead legs kill your footwork and split step.</>},
+  {n:'2',text:<><strong>Matches at least 2 days apart.</strong> Cumulative fatigue builds invisibly.</>},
+  {n:'3',text:<><strong>Machine before gym on combo days.</strong> Fresh arm for hitting, then lift.</>},
+  {n:'4',text:<><strong>Flag football = cardio day.</strong> Don't stack Block E that week.</>},
+  {n:'5',text:<><strong>35 min live hitting max.</strong> Overuse damage shows up 48–72 hrs later.</>},
+];
+
+// ═══════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════
+const ls=(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch{return d;}};
+const lss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const weekKey=(n)=>`week_${n}`;
+const currentWeekNum=()=>{
+  const stored=ls('cr_start_week',null);
+  if(!stored){const w=1;lss('cr_start_week',{date:todayStr(),num:1});return w;}
+  const diff=Math.floor((new Date()-new Date(stored.date))/(7*24*3600*1000));
+  return stored.num+diff;
+};
+
+async function b64url(arr){
+  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+async function genVerifier(){
+  const a=new Uint8Array(32);crypto.getRandomValues(a);return b64url(a);
+}
+async function genChallenge(v){
+  const enc=new TextEncoder().encode(v);
+  const h=await crypto.subtle.digest('SHA-256',enc);
+  return b64url(new Uint8Array(h));
+}
+async function sha256hex(s){
+  const enc=new TextEncoder().encode(s);
+  const h=await crypto.subtle.digest('SHA-256',enc);
+  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// COMPONENTS
+// ═══════════════════════════════════════════════════════
+
+// Video card with thumbnail → iframe on tap
+function VideoCard({vid,title='Exercise demo'}){
+  const[playing,setPlaying]=useState(false);
+  if(!vid)return null;
+  return(
+    <div className="video-wrap">
+      {playing?(
+        <iframe src={`https://www.youtube.com/embed/${vid}?autoplay=1&rel=0&modestbranding=1`}
+          allow="autoplay;fullscreen" allowFullScreen title={title}/>
+      ):(
+        <div className="video-thumb" onClick={()=>setPlaying(true)}>
+          <img src={`https://img.youtube.com/vi/${vid}/mqdefault.jpg`} alt={title}
+            onError={e=>e.target.style.display='none'}/>
+          <div className="play-btn">▶</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Expandable drill card
+function DrillCard({drill}){
+  const[open,setOpen]=useState(false);
+  const tagClass={footwork:'tg','shot quality':'tp','net game':'ta',defence:'tr','pattern play':'tg'}[drill.tag]||'tg';
+  return(
+    <div className={`drill${open?' open':''}`}>
+      <div className="drill-hdr" onClick={()=>setOpen(!open)}>
+        <div>
+          <div className="drill-htitle">{drill.name}<span className={`tag ${tagClass}`}>{drill.tag}</span></div>
+          <div className="drill-hmeta">{drill.dur}</div>
+        </div>
+        <div className="drill-chev">▾</div>
+      </div>
+      <div className="drill-body">
+        <VideoCard vid={drill.vid} title={drill.name}/>
+        {drill.steps.map((s,i)=>(
+          <div className="step" key={i}><div className="stepn">{i+1}</div><div className="stept">{s}</div></div>
+        ))}
+        {drill.tip&&<div className="drill-tip">{drill.tip}</div>}
+      </div>
+    </div>
+  );
+}
+
+// Expandable mobility exercise card
+function MobilityCard({ex}){
+  const[open,setOpen]=useState(false);
+  return(
+    <div className={`drill${open?' open':''}`}>
+      <div className="drill-hdr" onClick={()=>setOpen(!open)}>
+        <div>
+          <div className="drill-htitle">{ex.name}</div>
+          <div className="drill-hmeta">{ex.tags} · {ex.dur}</div>
+        </div>
+        <div className="drill-chev">▾</div>
+      </div>
+      <div className="drill-body">
+        <VideoCard vid={ex.vid} title={ex.name}/>
+        {ex.steps.map((s,i)=>(
+          <div className="step" key={i}><div className="stepn">{i+1}</div><div className="stept">{s}</div></div>
+        ))}
+        {ex.tip&&<div className="drill-tip">{ex.tip}</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── LOCK SCREEN ──────────────────────────────────────────
+function LockScreen({onUnlock}){
+  const[pin,setPin]=useState('');
+  const[mode,setMode]=useState('choose'); // choose | pin-setup | pin-auth | bio-auth
+  const[err,setErr]=useState('');
+  const hasCred=ls('cr_has_pin',false);
+  const hasBio=ls('cr_has_bio',false);
+
+  useEffect(()=>{
+    if(hasBio){setMode('bio-auth');tryBio();}
+    else if(hasCred){setMode('pin-auth');}
+    else{setMode('choose');}
+  },[]);
+
+  async function tryBio(){
+    try{
+      const credId=ls('cr_bio_id',null);
+      if(!credId){setMode(hasCred?'pin-auth':'choose');return;}
+      const challenge=new Uint8Array(32);crypto.getRandomValues(challenge);
+      await navigator.credentials.get({publicKey:{
+        challenge,rpId:RP_ID,
+        allowCredentials:[{id:Uint8Array.from(atob(credId),c=>c.charCodeAt(0)),type:'public-key'}],
+        userVerification:'required',timeout:60000
+      }});
+      onUnlock();
+    }catch(e){setMode(hasCred?'pin-auth':'choose');setErr('Biometric failed — enter PIN');}
+  }
+
+  async function setupBio(){
+    try{
+      const challenge=new Uint8Array(32);crypto.getRandomValues(challenge);
+      const cred=await navigator.credentials.create({publicKey:{
+        challenge,rp:{name:'CourtReady',id:RP_ID},
+        user:{id:new TextEncoder().encode('courtready-user'),name:'CourtReady User',displayName:'CourtReady User'},
+        pubKeyCredParams:[{alg:-7,type:'public-key'}],
+        authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'},
+        timeout:60000
+      }});
+      lss('cr_bio_id',btoa(String.fromCharCode(...new Uint8Array(cred.rawId))));
+      lss('cr_has_bio',true);
+      onUnlock();
+    }catch(e){setErr('Biometric setup failed');setMode('choose');}
+  }
+
+  async function handlePin(digit){
+    const np=pin+digit;
+    setPin(np);setErr('');
+    if(np.length<4)return;
+    const hash=await sha256hex(np);
+    if(mode==='pin-setup'){
+      lss('cr_pin_hash',hash);lss('cr_has_pin',true);
+      setPin('');onUnlock();
+    }else{
+      const stored=ls('cr_pin_hash','');
+      if(hash===stored){setPin('');onUnlock();}
+      else{setPin('');setErr('Wrong PIN');}
+    }
+  }
+
+  const KEYS=['1','2','3','4','5','6','7','8','9','0'];
+  return(
+    <div className="lock">
+      <div className="lock-logo">Court<span>Ready</span></div>
+      <div className="lock-sub">Your training, your data, secured.</div>
+      {mode==='choose'&&(
+        <>
+          <p style={{fontSize:13,color:'var(--text2)',textAlign:'center',marginBottom:20,lineHeight:1.5}}>Set up a lock to protect your data</p>
+          <div style={{display:'flex',flexDirection:'column',gap:10,width:240}}>
+            {window.PublicKeyCredential&&(
+              <button className="btn btn-primary btn-full" onClick={setupBio}>Use Fingerprint / Face</button>
+            )}
+            <button className="btn btn-outline btn-full" onClick={()=>setMode('pin-setup')}>Set up PIN</button>
+            <button className="btn btn-outline btn-full" style={{color:'var(--text3)'}} onClick={onUnlock}>Skip for now</button>
+          </div>
+        </>
+      )}
+      {(mode==='pin-auth'||mode==='pin-setup')&&(
+        <>
+          <p style={{fontSize:13,color:'var(--text2)',marginBottom:20}}>{mode==='pin-setup'?'Choose a 4-digit PIN':'Enter your PIN'}</p>
+          <div className="pin-dots">
+            {[0,1,2,3].map(i=><div key={i} className={`pin-dot${pin.length>i?' filled':''}`}/>)}
+          </div>
+          <div className="pin-pad">
+            {KEYS.map((k,i)=>(
+              <button key={k} className={`pin-key${k==='0'?' zero':''}`} onClick={()=>handlePin(k)}>{k}</button>
+            ))}
+            <button className="pin-key del" onClick={()=>{setPin(p=>p.slice(0,-1));setErr('');}}>⌫</button>
+          </div>
+          {hasBio&&mode==='pin-auth'&&<button className="bio-btn" onClick={()=>{setMode('bio-auth');tryBio();}}>Use fingerprint</button>}
+        </>
+      )}
+      {mode==='bio-auth'&&(
+        <>
+          <p style={{fontSize:13,color:'var(--text2)',marginBottom:20}}>Verifying fingerprint…</p>
+          <button className="bio-btn" onClick={()=>setMode(hasCred?'pin-auth':'choose')}>Use PIN instead</button>
+        </>
+      )}
+      <div className="lock-err">{err}</div>
+    </div>
+  );
+}
+
+// ── HOME TAB ─────────────────────────────────────────────
+function HomeTab({whoopData,whoopConnected,onConnectWhoop,currentWeek}){
+  const weekData=ls(weekKey(currentWeek),{});
+  const todayBlock=weekData[TODAY_IDX];
+  const sessions=ls('cr_sessions',[]);
+  const thisWeekSessions=sessions.filter(s=>s.week===currentWeek);
+  const streak=calcStreak(sessions);
+  const isSunday=new Date().getDay()===0;
+
+  const score=whoopData?.recovery?.score;
+  const scoreColor=score>=67?'#74C69D':score>=34?'#F4A261':'#FF6B6B';
+  const scoreLabel=score>=67?'High':'score'>=34?'Moderate':'Low';
+
+  return(
+    <div className="pg">
+      {isSunday&&<div className="notif-banner"><span style={{fontSize:20}}>📅</span><div className="notif-banner-text">Sunday — time to build your week! Head to the Schedule tab.</div></div>}
+      
+      {whoopConnected&&whoopData?(
+        <div className="whoop-card">
+          <div className="whoop-score-lbl">Today's Recovery</div>
+          <div className="whoop-score" style={{color:scoreColor}}>{score||'—'}</div>
+          <div className="whoop-metrics">
+            <div className="whoop-metric">
+              <div className="whoop-metric-val">{whoopData?.strain?.score?.toFixed(1)||'—'}</div>
+              <div className="whoop-metric-lbl">Strain</div>
+            </div>
+            <div className="whoop-metric">
+              <div className="whoop-metric-val">{whoopData?.sleep?.score||'—'}</div>
+              <div className="whoop-metric-lbl">Sleep score</div>
+            </div>
+            <div className="whoop-metric">
+              <div className="whoop-metric-val">{whoopData?.hrv||'—'}</div>
+              <div className="whoop-metric-lbl">HRV</div>
+            </div>
+          </div>
+          {score&&(
+            <div style={{marginTop:10,padding:'8px 10px',background:'rgba(0,0,0,.2)',borderRadius:6,fontSize:12,color:'rgba(255,255,255,.75)',lineHeight:1.5}}>
+              {score>=67?'✅ Green day — push your planned session hard.'
+               :score>=34?'🟡 Amber — stick to plan but don\'t chase PRs.'
+               :'🔴 Red — consider swapping to active recovery or rest.'}
+            </div>
+          )}
+        </div>
+      ):(
+        <div className="whoop-connect">
+          <h3>Connect Whoop</h3>
+          <p>See your daily recovery score, HRV, strain, and sleep data right here. Takes 30 seconds.</p>
+          <button className="btn btn-primary" onClick={onConnectWhoop}>Connect Whoop →</button>
+        </div>
+      )}
+
+      <div className="today-block">
+        <div className="today-label">Today · {DAYS[TODAY_IDX]}</div>
+        {todayBlock?(
+          <>
+            <div className="today-block-name">{todayBlock.name||todayBlock}</div>
+            <div className="today-block-desc">{BLOCKS_TENNIS.find(b=>b.id===(todayBlock.id||todayBlock))?.desc||''}</div>
+          </>
+        ):(
+          <div style={{fontSize:13,color:'var(--text3)'}}>No block assigned — head to Schedule to build your week.</div>
+        )}
+      </div>
+
+      <div className="stats-row">
+        <div className="stat-card"><div className="stat-val">{thisWeekSessions.length}</div><div className="stat-lbl">Sessions this week</div></div>
+        <div className="stat-card"><div className="stat-val">{streak}</div><div className="stat-lbl">Week streak</div></div>
+        <div className="stat-card"><div className="stat-val">W{currentWeek}</div><div className="stat-lbl">Program week</div></div>
+      </div>
+
+      <div className="sec-head"><span className="sec-title">This week</span><div className="sec-line"/></div>
+      <div className="day-grid">
+        {DAYS.map((d,i)=>{
+          const blk=weekData[i];
+          const done=blk&&blk.done;
+          return(
+            <div key={d} className={`day-cell${i===TODAY_IDX?' today-cell':''}${done?' done':''}${blk?.id==='FLAG'||blk==='FLAG'?' fixed':''}`}>
+              <div className="day-nm">{d}</div>
+              {done?<div className="day-done-icon">✓</div>:<div className="day-blk">{blk?(blk.id||blk):'—'}</div>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function calcStreak(sessions){
+  if(!sessions.length)return 0;
+  const weeks=[...new Set(sessions.map(s=>s.week))].sort((a,b)=>b-a);
+  const cw=currentWeekNum();
+  let streak=0;
+  for(let w=cw;w>=1;w--){
+    if(weeks.includes(w))streak++;
+    else if(w<cw)break;
+  }
+  return streak;
+}
+
+// ── SCHEDULE TAB ─────────────────────────────────────────
+function ScheduleTab(){
+  const[week,setWeek]=useState(currentWeekNum());
+  const[weekData,setWeekData]=useState(()=>ls(weekKey(currentWeekNum()),{}));
+  const[picking,setPicking]=useState(null); // day index being assigned
+  const isSunday=new Date().getDay()===0;
+
+  useEffect(()=>{setWeekData(ls(weekKey(week),{}));},[week]);
+
+  function assignBlock(dayIdx,block){
+    const nd={...weekData,[dayIdx]:{...block,done:false}};
+    setWeekData(nd);lss(weekKey(week),nd);setPicking(null);
+  }
+  function toggleDone(dayIdx){
+    if(!weekData[dayIdx])return;
+    const nd={...weekData,[dayIdx]:{...weekData[dayIdx],done:!weekData[dayIdx].done}};
+    setWeekData(nd);lss(weekKey(week),nd);
+  }
+  function clearDay(dayIdx){
+    const nd={...weekData};delete nd[dayIdx];
+    setWeekData(nd);lss(weekKey(week),nd);setPicking(null);
+  }
+
+  return(
+    <div className="pg">
+      {isSunday&&<div className="info orange" style={{marginBottom:12}}>📅 It's Sunday — plan your week below so you're ready for tomorrow.</div>}
+      
+      <div className="week-nav">
+        <button className="week-nav-btn" onClick={()=>{const nw=Math.max(1,week-1);setWeek(nw);}}>← Prev</button>
+        <div className="week-lbl">Week {week}</div>
+        <button className="week-nav-btn" onClick={()=>setWeek(w=>w+1)}>Next →</button>
+      </div>
+
+      <div style={{fontSize:11,color:'var(--text3)',marginBottom:10,lineHeight:1.5}}>Tap a day to assign a block · tap again to mark done · long-press to clear</div>
+
+      <div className="day-grid">
+        {DAYS.map((d,i)=>{
+          const blk=weekData[i];
+          const isFixed=i===3&&blk?.id==='FLAG';
+          const done=blk?.done;
+          return(
+            <div key={d}
+              className={`day-cell${i===TODAY_IDX&&week===currentWeekNum()?' today-cell':''}${done?' done':''}${blk?.id==='FLAG'?' fixed':''}`}
+              onClick={()=>{if(blk&&blk.done!==undefined)toggleDone(i);else setPicking(i===picking?null:i);}}
+              onContextMenu={e=>{e.preventDefault();clearDay(i);}}>
+              <div className="day-nm">{d}</div>
+              {done?<div className="day-done-icon">✓</div>
+               :<div className="day-blk" style={{color:blk?BLOCKS_TENNIS.find(b=>b.id===blk.id)?.color||'var(--text2)':'var(--text3)'}}>
+                  {blk?(blk.id||'—'):'—'}
+                </div>}
+            </div>
+          );
+        })}
+      </div>
+
+      {picking!==null&&(
+        <div className="block-picker">
+          <div className="bpick-day">Assign — {DAYS[picking]}</div>
+          <div className="bpick-grid">
+            {BLOCKS_TENNIS.map(b=>(
+              <div key={b.id} className={`bpick-opt${weekData[picking]?.id===b.id?' sel':''}`}
+                onClick={()=>assignBlock(picking,b)}>
+                <div className="bpick-letter" style={{color:b.color}}>{b.id}</div>
+                <div className="bpick-name">{b.name}</div>
+              </div>
+            ))}
+            <div className="bpick-opt" onClick={()=>clearDay(picking)}>
+              <div className="bpick-letter" style={{color:'var(--text3)'}}>✕</div>
+              <div className="bpick-name">Clear day</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="sec-head"><span className="sec-title">The 5 rules</span><div className="sec-line"/></div>
+      <div className="rule-list">
+        {RULES.map(r=>(
+          <div className="rule-item" key={r.n}>
+            <div className="rule-num">{r.n}</div>
+            <div className="rule-text">{r.text}</div>
+          </div>
+        ))}
+      </div>
+      <div className="info green" style={{marginTop:12}}>Thursday is always flag football. Sunday is always rest. These two never move.</div>
+    </div>
+  );
+}
+
+// ── TRAIN TAB ────────────────────────────────────────────
+function TrainTab(){
+  const[sub,setSub]=useState('drills');
+  const[gymSub,setGymSub]=useState('B');
+
+  return(
+    <div className="pg">
+      <div className="subnav">
+        {['drills','gym','intervals'].map(s=>(
+          <button key={s} className={`snbtn${sub===s?' on':''}`} onClick={()=>setSub(s)}>
+            {s==='drills'?'Machine drills':s==='gym'?'Gym workouts':'Intervals'}
+          </button>
+        ))}
+      </div>
+
+      {sub==='drills'&&(
+        <>
+          <div className="info orange">Max 35 min live hitting per session · machine before gym on combo days</div>
+          {DRILLS.map(d=><DrillCard key={d.id} drill={d}/>)}
+        </>
+      )}
+
+      {sub==='gym'&&(
+        <>
+          <div className="subnav">
+            <button className={`snbtn${gymSub==='B'?' on':''}`} onClick={()=>setGymSub('B')}>Block B · Lower body</button>
+            <button className={`snbtn${gymSub==='C'?' on':''}`} onClick={()=>setGymSub('C')}>Block C · Upper body</button>
+          </div>
+          {(gymSub==='B'?GYM_B:GYM_C).map((section,si)=>(
+            <div className="card" key={si}>
+              <div className="card-title">{section.section}</div>
+              <div style={{marginTop:8}}>
+                {section.exs.map((ex,ei)=>(
+                  <div className="row" key={ei}>
+                    <span className="rn">{ex.name}{ex.tag&&<span className={`tag tg`}>{ex.tag}</span>}</span>
+                    <span className="rv">{ex.sets}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          {gymSub==='C'&&<div className="info orange">Always do Block C after Block D on combo days.</div>}
+        </>
+      )}
+
+      {sub==='intervals'&&(
+        <>
+          <div className="card">
+            <div className="card-title">10-ball rally burst protocol</div>
+            <div className="card-sub" style={{marginBottom:10}}>Machine fires every 5–6 sec, medium-high pace, random L/R oscillation. Hit 10 balls at full effort — move fully to each, recover to centre. Rest, repeat.</div>
+            {INTERVAL_PROG.map((p,i)=>(
+              <div className="row" key={i}><span className="rn">{p.weeks}</span><span className="rv">{p.sets} · {p.rest}</span></div>
+            ))}
+          </div>
+          <div className="info green">More effective than baseline sprints — you're tracking the ball and making decisions, so HR climbs faster and the fatigue mirrors a real match.</div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── RECOVERY TAB ─────────────────────────────────────────
+function RecoveryTab(){
+  const[sub,setSub]=useState('daily');
+  const[mobSub,setMobSub]=useState('daily');
+  const[selectedWeek,setSelectedWeek]=useState(1);
+  const[wakeTime,setWakeTime]=useState('06:30');
+  const[dayType,setDayType]=useState('hard');
+
+  function calcBedtime(){
+    const dur=dayType==='hard'?8.5:dayType==='moderate'?8:7.5;
+    const[h,m]=wakeTime.split(':').map(Number);
+    const total=h*60+m-Math.round(dur*60);
+    const adj=((total%1440)+1440)%1440;
+    const bh=Math.floor(adj/60)%24;
+    const bm=adj%60;
+    const suf=bh>=12?'pm':'am';
+    const dh=bh%12||12;
+    const dm=bm<10?'0'+bm:bm;
+    return{time:`${dh}:${dm} ${suf}`,dur:`${dur} hrs`};
+  }
+
+  const bt=calcBedtime();
+  const weekDays=WEEK_PLAN_DATA.filter(d=>Math.ceil(d.day/7)===selectedWeek);
+
+  return(
+    <div className="pg">
+      <div className="subnav">
+        {['daily','6week','prematch','sleep','prevention'].map(s=>(
+          <button key={s} className={`snbtn${sub===s?' on':''}`} onClick={()=>setSub(s)}>
+            {s==='daily'?'Daily routine':s==='6week'?'6-week plan':s==='prematch'?'Pre-match':s==='sleep'?'Sleep':'Prevention'}
+          </button>
+        ))}
+      </div>
+
+      {sub==='daily'&&(
+        <>
+          <div className="info green">Do this before you look at your phone. 5 minutes daily compounds into significant mobility gains within 4 weeks.</div>
+          {DAILY_MOBILITY.map((ex,i)=><MobilityCard key={i} ex={ex}/>)}
+        </>
+      )}
+
+      {sub==='6week'&&(
+        <>
+          <div className="info green" style={{marginBottom:10}}>Theory of Mobility by Jason & Lauren Pak — 42 days, under 5 min each. Tap a week, then tap each day to expand instructions and watch the follow-along video.</div>
+          <div className="wk-nav-row">
+            {[1,2,3,4,5,6].map(w=>(
+              <button key={w} className={`wk-btn${selectedWeek===w?' on':''}`} onClick={()=>setSelectedWeek(w)}>Wk {w}</button>
+            ))}
+          </div>
+          {weekDays.map((d,i)=><WeekPlanDay key={i} day={d}/>)}
+          {selectedWeek===6&&<div className="info green" style={{marginTop:8}}>After 6 weeks, cycle back through with added weight. The gains compound from here.</div>}
+        </>
+      )}
+
+      {sub==='prematch'&&(
+        <>
+          <div className="info orange">Add before every match and ball machine session. Warms the shoulder joint before it takes load.</div>
+          {PREMATCH_MOBILITY.map((ex,i)=><MobilityCard key={i} ex={ex}/>)}
+          <div className="sec-head" style={{marginTop:16}}><span className="sec-title">Progress milestones</span><div className="sec-line"/></div>
+          {[
+            {wk:'Wk 2',color:'var(--court-line)',text:<><strong>Downward dog</strong> starts to feel less loaded. Lower back morning stiffness reduces.</>},
+            {wk:'Wk 4',color:'var(--accent)',text:<><strong>Toe reach</strong> noticeably closer. Split step feels snappier on court.</>},
+            {wk:'Wk 6',color:'var(--purple)',text:<><strong>Downward dog</strong> comfortable for 30+ sec. Serve follow-through freer.</>},
+            {wk:'Wk 8',color:'var(--red)',text:<><strong>Full plank</strong> without shaking. Core activates automatically during tennis movements.</>},
+          ].map((m,i)=>(
+            <div className="milestone" key={i}>
+              <div className="ms-wk" style={{color:m.color}}>{m.wk}</div>
+              <div className="ms-text">{m.text}</div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {sub==='sleep'&&(
+        <>
+          <div className="sec-head"><span className="sec-title">Sleep calculator</span><div className="sec-line"/></div>
+          <div className="sleep-calc">
+            <div className="calc-row">
+              <span className="calc-lbl">Wake-up time</span>
+              <input type="time" value={wakeTime} onChange={e=>setWakeTime(e.target.value)} className="lf-input" style={{flex:1}}/>
+            </div>
+            <div className="calc-row">
+              <span className="calc-lbl">Day type</span>
+              <select value={dayType} onChange={e=>setDayType(e.target.value)} className="lf-select" style={{flex:1}}>
+                <option value="hard">Hard day (match or gym)</option>
+                <option value="moderate">Moderate (drills / flag football)</option>
+                <option value="rest">Rest or active recovery</option>
+              </select>
+            </div>
+            <div className="calc-out">
+              <div className="calc-out-lbl">Bedtime target</div>
+              <div className="calc-out-val">{bt.time}</div>
+              <div className="calc-out-lbl" style={{marginTop:8}}>Sleep duration</div>
+              <div className="calc-out-val">{bt.dur}</div>
+            </div>
+          </div>
+
+          <div className="sec-head"><span className="sec-title">90-min wind-down</span><div className="sec-line"/></div>
+          <div className="card" style={{padding:0,overflow:'hidden'}}>
+            <div className="tl" style={{padding:'14px 14px 14px 32px'}}>
+              {[
+                {t:'T − 90 min',h:'Screens to night mode',d:'Blue light suppresses melatonin for 2 hrs. Biggest single sleep lever.'},
+                {t:'T − 75 min',h:'Last food or protein snack',d:'After hard training: Greek yogurt or cottage cheese, under 200 cal.'},
+                {t:'T − 60 min',h:'Lower back + mobility routine · 10 min',d:'Child\'s pose, hamstring stretch, cat-cow, glute bridge.'},
+                {t:'T − 45 min',h:'Warm shower',d:'Core temp drops as you step out — triggers sleep onset.'},
+                {t:'T − 30 min',h:'Phone out of bedroom',d:'Charge it elsewhere. Use an alarm clock instead.'},
+                {t:'T − 15 min',h:'Read, journal, or 4-7-8 breathing',d:'Pick one and repeat nightly. Ritual matters more than the activity.'},
+              ].map((item,i)=>(
+                <div className="tl-item" key={i}>
+                  <div className="tl-dot"/>
+                  <div className="tl-time">{item.t}</div>
+                  <div className="tl-title">{item.h}</div>
+                  <div className="tl-desc">{item.d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="sec-head" style={{marginTop:12}}><span className="sec-title">Sleep killers</span><div className="sec-line"/></div>
+          <div className="card" style={{padding:0}}>
+            {[
+              {name:'Phone in the bedroom',lvl:'HIGH',cls:'ki-high'},
+              {name:'Caffeine after 2pm',lvl:'HIGH',cls:'ki-high'},
+              {name:'Inconsistent weekend wake time',lvl:'HIGH',cls:'ki-high'},
+              {name:'Alcohol (even 1–2 drinks)',lvl:'HIGH',cls:'ki-high'},
+              {name:'Room above 20°C',lvl:'MEDIUM',cls:'ki-med'},
+              {name:'Intense training within 2 hrs of bed',lvl:'MEDIUM',cls:'ki-med'},
+              {name:'No morning sunlight',lvl:'MEDIUM',cls:'ki-med'},
+              {name:'Going to bed dehydrated',lvl:'MEDIUM',cls:'ki-med'},
+            ].map((k,i)=>(
+              <div className="killer-row" key={i}>
+                <span className="killer-name">{k.name}</span>
+                <span className={k.cls}>{k.lvl}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {sub==='prevention'&&(
+        <>
+          <div className="sec-head"><span className="sec-title">Pre-session warm-up</span><div className="sec-line"/></div>
+          <div className="card">
+            {['Hip circles + leg swings|2 × 10','Arm circles + shoulder rotations|2 × 10','High knees + butt kicks|2 × 20m','Lateral shuffle + carioca|2 × 20m each','Split step practice|30 sec'].map((r,i)=>{
+              const[n,s]=r.split('|');return<div className="row" key={i}><span className="rn">{n}</span><span className="rv">{s}</span></div>;
+            })}
+          </div>
+          <div className="sec-head"><span className="sec-title">Post-session cool-down</span><div className="sec-line"/></div>
+          <div className="card">
+            {['Supine hamstring stretch|2 × 40 sec each','Hip flexor lunge stretch|2 × 40 sec each','Child\'s pose|2 × 45 sec','Doorframe chest opener|2 × 30 sec','Wrist + forearm stretch|2 × 30 sec each'].map((r,i)=>{
+              const[n,s]=r.split('|');return<div className="row" key={i}><span className="rn">{n}</span><span className="rv">{s}</span></div>;
+            })}
+          </div>
+          <div className="sec-head"><span className="sec-title">Targeted prevention · 3× per week</span><div className="sec-line"/></div>
+          {PREVENT_SECTIONS.map((ps,i)=>(
+            <div className="prev-section" key={i}>
+              <div className="prev-head"><div className="prev-dot" style={{background:ps.color}}/>{ps.label}</div>
+              <div className="prev-body">
+                {ps.exs.map((ex,j)=><div className="row" key={j}><span className="rn">{ex.name}</span><span className="rv">{ex.sets}</span></div>)}
+              </div>
+            </div>
+          ))}
+          <div className="info red" style={{marginTop:10}}>Ball machine: 35-min hard limit. Overuse damage shows up 48–72 hrs later, not during the session.</div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function WeekPlanDay({day}){
+  const[open,setOpen]=useState(false);
+  return(
+    <div className={`drill${open?' open':''}`}>
+      <div className="drill-hdr" onClick={()=>setOpen(!open)}>
+        <div>
+          <div className="drill-htitle" style={{display:'flex',alignItems:'center',gap:8}}>
+            <span>Day {day.day}</span>
+            <span className={`wp-day-type ${day.typeClass}`}>{day.type}</span>
+          </div>
+          <div className="drill-hmeta" style={{fontSize:11,color:'var(--text3)',marginTop:2}}>{day.equip}</div>
+        </div>
+        <div className="drill-chev">▾</div>
+      </div>
+      <div className="drill-body">
+        <VideoCard vid={day.vid} title={`Day ${day.day} follow-along`}/>
+        <div style={{fontSize:13,color:'var(--text2)',lineHeight:1.7,marginTop:8}}>{day.exs}</div>
+        <div style={{fontSize:11,color:'var(--text3)',marginTop:4}}>Equipment: {day.equip}</div>
+      </div>
+    </div>
+  );
+}
+
+// ── LOG TAB ──────────────────────────────────────────────
+function LogTab(){
+  const[sub,setSub]=useState('log');
+  const[sessions,setSessions]=useState(()=>ls('cr_sessions',[]));
+  const[form,setForm]=useState({date:todayStr(),block:'A',dur:'60',notes:'',rating:0});
+
+  function saveSession(){
+    if(!form.block)return;
+    const ns={...form,id:Date.now(),week:currentWeekNum()};
+    const updated=[ns,...sessions];
+    setSessions(updated);lss('cr_sessions',updated);
+    setForm({date:todayStr(),block:'A',dur:'60',notes:'',rating:0});
+    setSub('history');
+  }
+  function deleteSession(id){
+    const updated=sessions.filter(s=>s.id!==id);
+    setSessions(updated);lss('cr_sessions',updated);
+  }
+
+  const RATING_EMOJI=['','😫','😕','😐','🙂','💪'];
+
+  return(
+    <div className="pg">
+      <div className="subnav">
+        <button className={`snbtn${sub==='log'?' on':''}`} onClick={()=>setSub('log')}>Log session</button>
+        <button className={`snbtn${sub==='history'?' on':''}`} onClick={()=>setSub('history')}>History</button>
+      </div>
+
+      {sub==='log'&&(
+        <div className="log-form">
+          <div className="lf-row">
+            <div className="lf-lbl">Date</div>
+            <input type="date" className="lf-input" value={form.date} onChange={e=>setForm({...form,date:e.target.value})}/>
+          </div>
+          <div className="lf-row">
+            <div className="lf-lbl">Block</div>
+            <select className="lf-select" value={form.block} onChange={e=>setForm({...form,block:e.target.value})}>
+              {BLOCKS_TENNIS.map(b=><option key={b.id} value={b.id}>{b.id} — {b.name}</option>)}
+            </select>
+          </div>
+          <div className="lf-row">
+            <div className="lf-lbl">Duration (min)</div>
+            <input type="number" className="lf-input" value={form.dur} onChange={e=>setForm({...form,dur:e.target.value})} min="5" max="180"/>
+          </div>
+          <div className="lf-row">
+            <div className="lf-lbl">Notes</div>
+            <textarea className="lf-textarea" value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} placeholder="How did it go? Anything to flag?"/>
+          </div>
+          <div className="lf-row">
+            <div className="lf-lbl">How did it feel?</div>
+            <div className="rating-row">
+              {[1,2,3,4,5].map(r=>(
+                <button key={r} className={`rating-btn${form.rating===r?' sel':''}`} onClick={()=>setForm({...form,rating:r})}>{RATING_EMOJI[r]}</button>
+              ))}
+            </div>
+          </div>
+          <button className="btn btn-primary btn-full" style={{marginTop:6}} onClick={saveSession}>Save session</button>
+        </div>
+      )}
+
+      {sub==='history'&&(
+        <>
+          {sessions.length===0?(
+            <div style={{textAlign:'center',padding:'40px 0',color:'var(--text3)',fontSize:13}}>No sessions logged yet.<br/>Start tracking your training!</div>
+          ):sessions.map(s=>(
+            <div className="session-item" key={s.id}>
+              <div className="si-head">
+                <div className="si-block">{BLOCKS_TENNIS.find(b=>b.id===s.block)?.name||s.block}</div>
+                <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                  <div className="si-date">{s.date}</div>
+                  <button onClick={()=>deleteSession(s.id)} style={{background:'transparent',color:'var(--text3)',fontSize:14,padding:'2px 4px',borderRadius:4}}>✕</button>
+                </div>
+              </div>
+              {s.notes&&<div className="si-notes">{s.notes}</div>}
+              <div className="si-meta">
+                {s.dur&&<div className="si-chip">{s.dur} min</div>}
+                {s.week&&<div className="si-chip">Week {s.week}</div>}
+                {s.rating>0&&<div className="si-chip">{['','😫','😕','😐','🙂','💪'][s.rating]}</div>}
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── SETTINGS TAB ─────────────────────────────────────────
+function SettingsTab({whoopConnected,onDisconnectWhoop,onConnectWhoop}){
+  const[notif,setNotif]=useState(()=>ls('cr_notif',{morning:true,winddown:true,sunday:true}));
+  const[sport,setSport]=useState(()=>ls('cr_sport','tennis'));
+  const[lockEnabled,setLockEnabled]=useState(()=>ls('cr_has_pin',false)||ls('cr_has_bio',false));
+
+  function toggleNotif(key){
+    const n={...notif,[key]:!notif[key]};
+    setNotif(n);lss('cr_notif',n);
+    if(n[key]){requestNotifPermission();}
+  }
+  async function requestNotifPermission(){
+    if('Notification' in window){await Notification.requestPermission();}
+  }
+  function clearAll(){
+    if(confirm('Clear ALL app data? This cannot be undone.')){localStorage.clear();window.location.reload();}}
+
+  return(
+    <div className="pg">
+      <div className="sec-head"><span className="sec-title">Sport profile</span><div className="sec-line"/></div>
+      <div className="profile-switch">
+        <button className={`profile-btn${sport==='tennis'?' on':''}`} onClick={()=>{setSport('tennis');lss('cr_sport','tennis');}}>🎾 Tennis</button>
+        <button className={`profile-btn${sport==='basketball'?' on':''}`} onClick={()=>{setSport('basketball');lss('cr_sport','basketball');}}>🏀 Basketball</button>
+      </div>
+      {sport==='basketball'&&<div className="info orange">Basketball profile coming soon — content will be added when your indoor season starts.</div>}
+
+      <div className="sec-head"><span className="sec-title">Whoop</span><div className="sec-line"/></div>
+      <div className="settings-section">
+        <div className="settings-row">
+          <div><div className="settings-label">Whoop connection</div><div className="settings-sub">{whoopConnected?'Connected — pulling live data':'Not connected'}</div></div>
+          <button className="btn btn-sm btn-outline" onClick={whoopConnected?onDisconnectWhoop:onConnectWhoop}>{whoopConnected?'Disconnect':'Connect'}</button>
+        </div>
+      </div>
+
+      <div className="sec-head"><span className="sec-title">Notifications</span><div className="sec-line"/></div>
+      <div className="settings-section">
+        {[
+          {key:'morning',label:'Morning mobility',sub:'Daily reminder to do your routine'},
+          {key:'winddown',label:'Wind-down reminder',sub:'8:30pm — screens down soon'},
+          {key:'sunday',label:'Sunday schedule builder',sub:'Reminder to plan your week'},
+        ].map(n=>(
+          <div className="settings-row" key={n.key}>
+            <div><div className="settings-label">{n.label}</div><div className="settings-sub">{n.sub}</div></div>
+            <button className={`toggle${notif[n.key]?' on':''}`} onClick={()=>toggleNotif(n.key)}/>
+          </div>
+        ))}
+      </div>
+
+      <div className="sec-head"><span className="sec-title">Security</span><div className="sec-line"/></div>
+      <div className="settings-section">
+        <div className="settings-row">
+          <div><div className="settings-label">Biometric / PIN lock</div><div className="settings-sub">{lockEnabled?'Enabled':'Disabled'}</div></div>
+          <button className="btn btn-sm btn-outline" onClick={()=>{
+            if(lockEnabled){if(confirm('Remove lock?')){localStorage.removeItem('cr_has_pin');localStorage.removeItem('cr_has_bio');localStorage.removeItem('cr_pin_hash');localStorage.removeItem('cr_bio_id');setLockEnabled(false);}}
+            else{window.location.reload();}
+          }}>{lockEnabled?'Remove lock':'Set up lock'}</button>
+        </div>
+      </div>
+
+      <div className="sec-head"><span className="sec-title">Data</span><div className="sec-line"/></div>
+      <div className="settings-section">
+        <div className="settings-row">
+          <div><div className="settings-label">Clear all data</div><div className="settings-sub">Resets the app completely</div></div>
+          <button className="btn btn-sm" style={{background:'rgba(255,107,107,.15)',color:'var(--red)',border:'none'}} onClick={clearAll}>Clear</button>
+        </div>
+      </div>
+
+      <div style={{textAlign:'center',padding:'24px 0 8px',fontSize:11,color:'var(--text3)'}}>CourtReady · KJ-Paul · Built with Claude</div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// WHOOP OAUTH
+// ═══════════════════════════════════════════════════════
+async function initiateWhoopAuth(){
+  const verifier=await genVerifier();
+  const challenge=await genChallenge(verifier);
+  const state=btoa(Math.random().toString());
+  sessionStorage.setItem('whoop_verifier',verifier);
+  sessionStorage.setItem('whoop_state',state);
+  const params=new URLSearchParams({
+    client_id:WHOOP.clientId,
+    redirect_uri:WHOOP.redirectUri,
+    response_type:'code',
+    scope:WHOOP.scopes,
+    code_challenge:challenge,
+    code_challenge_method:'S256',
+    state
+  });
+  window.location.href=`${WHOOP.authUrl}?${params}`;
+}
+
+async function exchangeWhoopCode(code){
+  const verifier=sessionStorage.getItem('whoop_verifier');
+  if(!verifier)throw new Error('No code verifier');
+  const res=await fetch(WHOOP.tokenUrl,{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:new URLSearchParams({grant_type:'authorization_code',client_id:WHOOP.clientId,code,redirect_uri:WHOOP.redirectUri,code_verifier:verifier})
+  });
+  if(!res.ok){const t=await res.text();throw new Error(`Token exchange failed: ${t}`);}
+  return res.json();
+}
+
+async function fetchWhoopData(token){
+  try{
+    const[rec,slp,cyc]=await Promise.all([
+      fetch(`${WHOOP.apiBase}/recovery?limit=1`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json():null),
+      fetch(`${WHOOP.apiBase}/sleep?limit=1`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json():null),
+      fetch(`${WHOOP.apiBase}/cycle?limit=1`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json():null),
+    ]);
+    return{
+      recovery:rec?.records?.[0]?.score,
+      sleep:slp?.records?.[0]?.score,
+      strain:cyc?.records?.[0]?.score,
+      hrv:rec?.records?.[0]?.score?.hrv_rmssd_milli?.toFixed(0)
+    };
+  }catch{return null;}
+}
+
+// ═══════════════════════════════════════════════════════
+// NOTIFICATION SCHEDULER
+// ═══════════════════════════════════════════════════════
+function scheduleNotifications(prefs){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const now=new Date();
+  const h=now.getHours();const m=now.getMinutes();
+  // Wind-down: 8:30pm
+  if(prefs.winddown&&h===20&&m>=30&&m<35){
+    new Notification('CourtReady',{body:'Wind down time 🌙 Screens off in 90 minutes — bedtime is close.',icon:'/courtready/icon-192.png'});
+  }
+  // Sunday schedule
+  if(prefs.sunday&&now.getDay()===0&&h===18&&m<5){
+    new Notification('CourtReady',{body:'📅 Time to build your week — open the Schedule tab.',icon:'/courtready/icon-192.png'});
+  }
+  // Morning mobility
+  if(prefs.morning&&h===7&&m<5){
+    new Notification('CourtReady',{body:'🌅 5-minute mobility routine — do it before you check your phone.',icon:'/courtready/icon-192.png'});
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ROOT APP
+// ═══════════════════════════════════════════════════════
+function App(){
+  const[locked,setLocked]=useState(()=>ls('cr_has_pin',false)||ls('cr_has_bio',false));
+  const[tab,setTab]=useState('home');
+  const[showSettings,setShowSettings]=useState(false);
+  const[whoopToken,setWhoopToken]=useState(()=>ls('cr_whoop_token',null));
+  const[whoopData,setWhoopData]=useState(null);
+  const[authLoading,setAuthLoading]=useState(false);
+  const currentWeek=currentWeekNum();
+
+  // Handle Whoop OAuth callback
+  useEffect(()=>{
+    const params=new URLSearchParams(window.location.search);
+    const code=params.get('code');
+    if(code){
+      setAuthLoading(true);
+      window.history.replaceState({},'',window.location.pathname);
+      exchangeWhoopCode(code).then(data=>{
+        if(data.access_token){
+          lss('cr_whoop_token',data.access_token);
+          if(data.refresh_token)lss('cr_whoop_refresh',data.refresh_token);
+          setWhoopToken(data.access_token);
+        }
+      }).catch(e=>console.error('Whoop auth error:',e))
+        .finally(()=>setAuthLoading(false));
+    }
+  },[]);
+
+  // Fetch Whoop data when token available
+  useEffect(()=>{
+    if(whoopToken){
+      fetchWhoopData(whoopToken).then(d=>{if(d)setWhoopData(d);});
+    }
+  },[whoopToken]);
+
+  // Notification check every 5 min
+  useEffect(()=>{
+    const prefs=ls('cr_notif',{morning:true,winddown:true,sunday:true});
+    scheduleNotifications(prefs);
+    const timer=setInterval(()=>scheduleNotifications(ls('cr_notif',{morning:true,winddown:true,sunday:true})),5*60*1000);
+    return()=>clearInterval(timer);
+  },[]);
+
+  // Service worker
+  useEffect(()=>{
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('/courtready/sw.js',{scope:'/courtready/'}).catch(()=>{});
+    }
+  },[]);
+
+  function disconnectWhoop(){
+    localStorage.removeItem('cr_whoop_token');
+    localStorage.removeItem('cr_whoop_refresh');
+    setWhoopToken(null);setWhoopData(null);
+  }
+
+  if(locked)return<LockScreen onUnlock={()=>setLocked(false)}/>;
+  if(authLoading)return<div style={{display:'flex',height:'100vh',alignItems:'center',justifyContent:'center',background:'var(--bg)',flexDirection:'column',gap:12}}><div style={{fontSize:24,color:'var(--court-line)'}}>Connecting Whoop…</div><div style={{fontSize:12,color:'var(--text3)'}}>One moment</div></div>;
+
+  const TABS=[
+    {id:'home',icon:'🏠',label:'Home'},
+    {id:'schedule',icon:'📅',label:'Schedule'},
+    {id:'train',icon:'🎾',label:'Train'},
+    {id:'recovery',icon:'😴',label:'Recovery'},
+    {id:'log',icon:'📊',label:'Log'},
+  ];
+
+  const currentTabName=showSettings?'Settings':TABS.find(t=>t.id===tab)?.label||'';
+
+  return(
+    <div className="app">
+      <div className="hdr">
+        <div className="hdr-title">Court<span>Ready</span></div>
+        <div className="hdr-right">
+          {whoopData?.recovery!==undefined&&(
+            <div className="whoop-chip">
+              <div className={`whoop-dot${whoopData.recovery>=67?' green':whoopData.recovery>=34?' amber':' red'}`}/>
+              <span style={{color:whoopData.recovery>=67?'var(--court-line)':whoopData.recovery>=34?'var(--accent)':'var(--red)'}}>
+                {whoopData.recovery}%
+              </span>
+            </div>
+          )}
+          <button className="gear-btn" onClick={()=>setShowSettings(!showSettings)}>⚙</button>
+        </div>
+      </div>
+
+      <div className="tab-content">
+        {showSettings?(
+          <SettingsTab whoopConnected={!!whoopToken} onDisconnectWhoop={disconnectWhoop} onConnectWhoop={initiateWhoopAuth}/>
+        ):tab==='home'?(
+          <HomeTab whoopData={whoopData} whoopConnected={!!whoopToken} onConnectWhoop={initiateWhoopAuth} currentWeek={currentWeek}/>
+        ):tab==='schedule'?(
+          <ScheduleTab/>
+        ):tab==='train'?(
+          <TrainTab/>
+        ):tab==='recovery'?(
+          <RecoveryTab/>
+        ):(
+          <LogTab/>
+        )}
+      </div>
+
+      <div className="bnav">
+        {TABS.map(t=>(
+          <button key={t.id} className={`bnav-btn${tab===t.id&&!showSettings?' on':''}`}
+            onClick={()=>{setTab(t.id);setShowSettings(false);}}>
+            <div className="bnav-icon">{t.icon}</div>
+            <div className="bnav-lbl">{t.label}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
