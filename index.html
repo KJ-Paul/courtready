@@ -1815,7 +1815,6 @@ function App(){
         <button onClick={()=>{setAuthLoading(false);localStorage.removeItem('whoop_pending_code');}} style={{background:'rgba(255,255,255,.2)',border:'none',color:'#fff',padding:'2px 10px',borderRadius:10,fontSize:12,cursor:'pointer'}}>Cancel</button>
       </div>}
       {whoopError&&<div style={{position:'fixed',top:0,left:0,right:0,background:'var(--red)',color:'#fff',textAlign:'center',padding:'8px 12px',fontSize:12,zIndex:999,display:'flex',justifyContent:'space-between',alignItems:'center'}}><span>Whoop error: {whoopError}</span><button style={{background:'transparent',color:'#fff',fontWeight:700}} onClick={()=>setWhoopError('')}>✕</button></div>}
-      <div className="app">
       <div className="hdr">
         <div className="hdr-title" onClick={()=>{
           if(!window._dbgTaps)window._dbgTaps=0;
@@ -1861,7 +1860,6 @@ function App(){
           </button>
         ))}
       </div>
-    </div>
     </div>
   );
 }
