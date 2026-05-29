@@ -1088,12 +1088,23 @@ function App(){
       .finally(()=>{clearTimeout(t);setAuthLoading(false);});
   },[locked,setupLock]);
 
-  // Fetch Whoop data when token available
+  // Fetch Whoop data — cached for 1 hour to minimise proxy requests
   useEffect(()=>{
-    if(whoopToken){
-      dbg('[W] Fetching Whoop data...');
-      fetchWhoop(whoopToken).then(d=>{if(d)setWhoopData(d);});
+    if(!whoopToken)return;
+    const cached=ls('cr_whoop_cache',null);
+    const cacheAge=Date.now()-parseInt(ls('cr_whoop_cache_ts','0'));
+    if(cached&&cacheAge<60*60*1000){
+      dbg('[W] Using cached data (age: '+Math.round(cacheAge/60000)+' min)');
+      setWhoopData(cached);return;
     }
+    dbg('[W] Fetching fresh Whoop data...');
+    fetchWhoop(whoopToken).then(d=>{
+      if(d){
+        setWhoopData(d);
+        lss('cr_whoop_cache',d);
+        lss('cr_whoop_cache_ts',String(Date.now()));
+      }
+    });
   },[whoopToken]);
 
   // Service worker
@@ -1117,7 +1128,7 @@ function App(){
   },[]);
 
   function disconnectWhoop(){
-    ['cr_whoop_token','cr_whoop_refresh','whoop_pending_code','whoop_code_ts','whoop_ver','whoop_st'].forEach(k=>localStorage.removeItem(k));
+    ['cr_whoop_token','cr_whoop_refresh','whoop_pending_code','whoop_code_ts','whoop_ver','whoop_st','cr_whoop_cache','cr_whoop_cache_ts'].forEach(k=>localStorage.removeItem(k));
     setWhoopToken(null);setWhoopData(null);setWhoopError('');setAuthLoading(false);
   }
 
