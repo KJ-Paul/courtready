@@ -1734,6 +1734,7 @@ function App(){
     dbgLog('[Whoop] Unlock effect fired. locked=',locked,'code=',code);
     if(!code)return;
     localStorage.removeItem('whoop_pending_code');
+    localStorage.removeItem('whoop_code_ts');
     setAuthLoading(true);
     setWhoopError('');
     // Auto-cancel after 15 seconds
