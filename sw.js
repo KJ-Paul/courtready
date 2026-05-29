@@ -1,4 +1,4 @@
-const CACHE = 'courtready-v6';
+const CACHE = 'courtready-v7';
 const ASSETS = [
   '/courtready/',
   '/courtready/index.html',
