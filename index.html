@@ -299,10 +299,9 @@ const WHOOP={
   clientId:'ce65ef88-78f3-4e53-b5f6-ad6fe3c170a3',
   redirectUri:'https://kj-paul.github.io/courtready/',
   authUrl:'https://api.prod.whoop.com/oauth/oauth2/auth',
-  // Token exchange goes through Netlify proxy to avoid CORS
-  // Replace YOUR-NETLIFY-SITE with your actual Netlify site name after setup
   tokenProxy:'https://courtready-kj.netlify.app/.netlify/functions/whoop-token',
-  apiBase:'https://api.prod.whoop.com/developer/v1',
+  // API calls also go through proxy (Whoop blocks direct browser requests)
+  apiProxy:'https://courtready-kj.netlify.app/.netlify/functions/whoop-token',
   scopes:'offline read:recovery read:sleep read:workout read:cycles'
 };
 const RP_ID='kj-paul.github.io';
@@ -1620,20 +1619,24 @@ async function exchangeWhoopCode(code){
   return res.json();
 }
 
+async function proxyGet(path, token){
+  const url=`${WHOOP.apiProxy}?path=${encodeURIComponent(path)}`;
+  const res=await fetch(url,{headers:{Authorization:`Bearer ${token}`}});
+  if(!res.ok){dbgLog('[Whoop] proxy GET failed:',res.status,path);return null;}
+  return res.json();
+}
+
 async function fetchWhoopData(token){
   try{
-    dbgLog('[Whoop] Fetching recovery data...');
-    const recRes=await fetch(`${WHOOP.apiBase}/recovery?limit=1`,{headers:{Authorization:`Bearer ${token}`}});
-    dbgLog('[Whoop] Recovery status:',recRes.status);
-    const rec=recRes.ok?await recRes.json():null;
-    dbgLog('[Whoop] Recovery data:',rec);
-
-    const slpRes=await fetch(`${WHOOP.apiBase}/sleep?limit=1`,{headers:{Authorization:`Bearer ${token}`}});
-    const slp=slpRes.ok?await slpRes.json():null;
-
-    const cycRes=await fetch(`${WHOOP.apiBase}/cycle?limit=1`,{headers:{Authorization:`Bearer ${token}`}});
-    const cyc=cycRes.ok?await cycRes.json():null;
-
+    dbgLog('[Whoop] Fetching data via proxy...');
+    const[rec,slp,cyc]=await Promise.all([
+      proxyGet('/developer/v1/recovery?limit=1',token),
+      proxyGet('/developer/v1/sleep?limit=1',token),
+      proxyGet('/developer/v1/cycle?limit=1',token),
+    ]);
+    dbgLog('[Whoop] Recovery raw:',rec);
+    dbgLog('[Whoop] Sleep raw:',slp);
+    dbgLog('[Whoop] Cycle raw:',cyc);
     const result={
       recovery:rec?.records?.[0]?.score?.recovery_score??rec?.records?.[0]?.score,
       sleep:slp?.records?.[0]?.score?.sleep_performance_percentage??slp?.records?.[0]?.score,
