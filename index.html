@@ -303,7 +303,7 @@ const WHOOP={
   // Replace YOUR-NETLIFY-SITE with your actual Netlify site name after setup
   tokenProxy:'https://courtready-kj.netlify.app/.netlify/functions/whoop-token',
   apiBase:'https://api.prod.whoop.com/developer/v1',
-  scopes:'read:recovery read:sleep read:workout read:cycles'
+  scopes:'offline read:recovery read:sleep read:workout read:cycles'
 };
 const RP_ID='kj-paul.github.io';
 const DAYS=['MON','TUE','WED','THU','FRI','SAT','SUN'];
@@ -1622,18 +1622,30 @@ async function exchangeWhoopCode(code){
 
 async function fetchWhoopData(token){
   try{
-    const[rec,slp,cyc]=await Promise.all([
-      fetch(`${WHOOP.apiBase}/recovery?limit=1`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json():null),
-      fetch(`${WHOOP.apiBase}/sleep?limit=1`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json():null),
-      fetch(`${WHOOP.apiBase}/cycle?limit=1`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json():null),
-    ]);
-    return{
-      recovery:rec?.records?.[0]?.score,
-      sleep:slp?.records?.[0]?.score,
-      strain:cyc?.records?.[0]?.score,
+    dbgLog('[Whoop] Fetching recovery data...');
+    const recRes=await fetch(`${WHOOP.apiBase}/recovery?limit=1`,{headers:{Authorization:`Bearer ${token}`}});
+    dbgLog('[Whoop] Recovery status:',recRes.status);
+    const rec=recRes.ok?await recRes.json():null;
+    dbgLog('[Whoop] Recovery data:',rec);
+
+    const slpRes=await fetch(`${WHOOP.apiBase}/sleep?limit=1`,{headers:{Authorization:`Bearer ${token}`}});
+    const slp=slpRes.ok?await slpRes.json():null;
+
+    const cycRes=await fetch(`${WHOOP.apiBase}/cycle?limit=1`,{headers:{Authorization:`Bearer ${token}`}});
+    const cyc=cycRes.ok?await cycRes.json():null;
+
+    const result={
+      recovery:rec?.records?.[0]?.score?.recovery_score??rec?.records?.[0]?.score,
+      sleep:slp?.records?.[0]?.score?.sleep_performance_percentage??slp?.records?.[0]?.score,
+      strain:cyc?.records?.[0]?.score?.strain??cyc?.records?.[0]?.score,
       hrv:rec?.records?.[0]?.score?.hrv_rmssd_milli?.toFixed(0)
     };
-  }catch{return null;}
+    dbgLog('[Whoop] Parsed result:',result);
+    return result;
+  }catch(e){
+    dbgLog('[Whoop] fetchWhoopData error:',e.message);
+    return null;
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1718,7 +1730,12 @@ function App(){
   // Fetch Whoop data when token available
   useEffect(()=>{
     if(whoopToken){
-      fetchWhoopData(whoopToken).then(d=>{if(d)setWhoopData(d);});
+      dbgLog('[Whoop] Token present, fetching data...');
+      fetchWhoopData(whoopToken).then(d=>{
+        dbgLog('[Whoop] setWhoopData called with:',d);
+        if(d)setWhoopData(d);
+        else dbgLog('[Whoop] fetchWhoopData returned null');
+      });
     }
   },[whoopToken]);
 
