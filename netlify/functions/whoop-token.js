@@ -1,5 +1,5 @@
 // Whoop OAuth token exchange proxy
-// Bypasses browser CORS restrictions on Whoop's token endpoint
+// Handles CORS and injects client_secret server-side (never exposed to browser)
 
 const https = require('https');
 
@@ -10,12 +10,12 @@ const CORS_HEADERS = {
 };
 
 exports.handler = async (event) => {
-  // Test endpoint — visiting in browser should return this
+  // Health check
   if (event.httpMethod === 'GET') {
     return {
       statusCode: 200,
       headers: { ...CORS_HEADERS, 'Content-Type': 'text/plain' },
-      body: 'CourtReady Whoop proxy is running ✓',
+      body: 'CourtReady Whoop proxy is running',
     };
   }
 
@@ -28,8 +28,21 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: CORS_HEADERS, body: 'Method not allowed' };
   }
 
+  const clientSecret = process.env.WHOOP_CLIENT_SECRET;
+  if (!clientSecret) {
+    return {
+      statusCode: 500,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'WHOOP_CLIENT_SECRET environment variable not set in Netlify' }),
+    };
+  }
+
+  // Parse incoming body and inject client_secret
+  const incomingParams = new URLSearchParams(event.body || '');
+  incomingParams.set('client_secret', clientSecret);
+  const body = incomingParams.toString();
+
   return new Promise((resolve) => {
-    const body = event.body || '';
     const options = {
       hostname: 'api.prod.whoop.com',
       path: '/oauth/oauth2/token',
@@ -55,7 +68,7 @@ exports.handler = async (event) => {
     req.on('error', (err) => {
       resolve({
         statusCode: 500,
-        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+        headers: CORS_HEADERS,
         body: JSON.stringify({ error: err.message }),
       });
     });
